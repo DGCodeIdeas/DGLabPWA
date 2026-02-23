@@ -62,6 +62,11 @@ class AssetBundler
     private static array $bundledAssets = [];
 
     /**
+     * @var AssetBundler|null $instance Static instance for helper methods
+     */
+    private static ?AssetBundler $instance = null;
+
+    /**
      * Constructor
      * 
      * @param array $options Bundler options
@@ -163,9 +168,10 @@ class AssetBundler
         // Remove variable definitions
         $css = preg_replace('/\$[a-zA-Z0-9_-]+\s*:\s*[^;]+;\s*/', '', $css);
         
-        // Replace variable usage
-        foreach ($variables as $name => $value) {
-            $css = str_replace('$' . $name, $value, $css);
+        // Replace variable usage (optimized with arrays)
+        if (!empty($variables)) {
+            $search = array_map(fn($name) => '$' . $name, array_keys($variables));
+            $css = str_replace($search, array_values($variables), $css);
         }
         
         // Process nested rules (basic support)
@@ -603,6 +609,19 @@ class AssetBundler
     }
 
     /**
+     * Get static instance for helper methods
+     *
+     * @return self Static instance
+     */
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
      * Get bundled CSS URL
      * 
      * @param string|array $files Files to bundle
@@ -611,8 +630,7 @@ class AssetBundler
      */
     public static function css($files, string $outputName = 'app.css'): string
     {
-        $bundler = new self();
-        return $bundler->compileScss($files, $outputName);
+        return self::getInstance()->compileScss($files, $outputName);
     }
 
     /**
@@ -624,7 +642,6 @@ class AssetBundler
      */
     public static function js($files, string $outputName = 'app.js'): string
     {
-        $bundler = new self();
-        return $bundler->bundleJs($files, $outputName);
+        return self::getInstance()->bundleJs($files, $outputName);
     }
 }

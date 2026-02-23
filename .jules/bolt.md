@@ -8,3 +8,8 @@
 **Learning:** Sequential `preg_replace` calls on the same string are slightly slower than a single call with an array of patterns, as the engine can optimize the multiple patterns in a single pass.
 
 **Action:** Always defer resource-heavy initializations (DB, external APIs) until they are actually needed. Combine regex patterns in `AssetBundler` and use runtime static caching for components instantiated multiple times per request.
+
+## 2025-02-24 - Consolidated Content Processing
+**Learning:** Sequential processing of large text files (like CSS or EPUB content) using multiple independent methods creates significant overhead. Consolidating property replacements (e.g., font-size, line-height) into a single regex pass with arrays or a callback reduces the number of string scans and the risk of redundant/fragmented output (like multiple `body` blocks).
+
+**Action:** Prioritize single-pass processing for bulk text modifications. Use array-based `preg_replace` for simple substitutions and `preg_replace_callback` for complex conditional logic on the same content stream.
