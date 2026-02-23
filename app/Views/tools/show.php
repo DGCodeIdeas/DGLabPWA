@@ -69,7 +69,7 @@ $isEpubTool = $tool instanceof EpubFontChanger;
                         <p class="file-info-name" id="file-name"></p>
                         <p class="file-info-size" id="file-size"></p>
                     </div>
-                    <button type="button" class="file-info-remove" id="remove-file" title="Remove file">
+                    <button type="button" class="file-info-remove" id="remove-file" title="Remove file" aria-label="Remove file">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -103,7 +103,7 @@ $isEpubTool = $tool instanceof EpubFontChanger;
                                 case 'select': ?>
                                     <select name="<?php echo $key; ?>" id="<?php echo $key; ?>" 
                                             class="form-select"
-                                            <?php echo ($config['required'] ?? false) ? 'required' : ''; ?>>
+                                            <?php echo ($config['required'] ?? false) ? 'required aria-required="true"' : ''; ?>>
                                         <?php foreach ($config['options'] as $value => $label): ?>
                                             <option value="<?php echo $value; ?>" 
                                                     <?php echo ($config['default'] ?? '') === $value ? 'selected' : ''; ?>>
@@ -129,7 +129,7 @@ $isEpubTool = $tool instanceof EpubFontChanger;
                                            min="<?php echo $config['min'] ?? ''; ?>"
                                            max="<?php echo $config['max'] ?? ''; ?>"
                                            step="<?php echo $config['step'] ?? '1'; ?>"
-                                           <?php echo ($config['required'] ?? false) ? 'required' : ''; ?>>
+                                           <?php echo ($config['required'] ?? false) ? 'required aria-required="true"' : ''; ?>>
                                 <?php break; ?>
                                 
                                 <?php case 'file': ?>
@@ -142,7 +142,7 @@ $isEpubTool = $tool instanceof EpubFontChanger;
                                     <input type="text" name="<?php echo $key; ?>" id="<?php echo $key; ?>"
                                            class="form-input"
                                            value="<?php echo htmlspecialchars($config['default'] ?? ''); ?>"
-                                           <?php echo ($config['required'] ?? false) ? 'required' : ''; ?>>
+                                           <?php echo ($config['required'] ?? false) ? 'required aria-required="true"' : ''; ?>>
                             <?php endswitch; ?>
                         </div>
                     <?php endforeach; ?>

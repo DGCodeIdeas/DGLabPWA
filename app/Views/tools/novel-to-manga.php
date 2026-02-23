@@ -78,7 +78,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                         <p class="file-info-name" id="file-name"></p>
                         <p class="file-info-size" id="file-size"></p>
                     </div>
-                    <button type="button" class="file-info-remove" id="remove-file" title="Remove file">
+                    <button type="button" class="file-info-remove" id="remove-file" title="Remove file" aria-label="Remove file">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -113,7 +113,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                             <i class="fas fa-brain"></i> AI Provider
                         </label>
                         <p class="form-help">Select the AI service for processing your novel</p>
-                        <select name="ai_provider" id="ai_provider" class="form-select" required>
+                        <select name="ai_provider" id="ai_provider" class="form-select" required aria-required="true">
                             <option value="openai" selected>
                                 OpenAI GPT (Free tier available)
                             </option>
@@ -135,7 +135,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                             <i class="fas fa-microchip"></i> AI Model
                         </label>
                         <p class="form-help">Choose the model based on quality and speed needs</p>
-                        <select name="ai_model" id="ai_model" class="form-select" required>
+                        <select name="ai_model" id="ai_model" class="form-select" required aria-required="true">
                             <optgroup label="OpenAI Models" data-provider="openai">
                                 <option value="gpt-4o-mini" selected>GPT-4o Mini (Fast, Free)</option>
                                 <option value="gpt-4o">GPT-4o (Best Quality)</option>
@@ -158,7 +158,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                             <i class="fas fa-shield-alt"></i> Content Mode
                         </label>
                         <p class="form-help">Select content filtering level for the output</p>
-                        <select name="content_mode" id="content_mode" class="form-select" required>
+                        <select name="content_mode" id="content_mode" class="form-select" required aria-required="true">
                             <option value="censored" selected>Censored (Safe Content Only)</option>
                             <option value="uncensored">Uncensored (Mature Content Allowed)</option>
                         </select>
@@ -189,7 +189,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                                        class="form-input"
                                        placeholder="Enter your API key"
                                        autocomplete="off">
-                                <button type="button" class="btn btn-icon" id="toggle-key-visibility" title="Show/Hide">
+                                <button type="button" class="btn btn-icon" id="toggle-key-visibility" title="Show/Hide API key" aria-label="Show/Hide API key">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
@@ -229,7 +229,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                             <i class="fas fa-cut"></i> Chunk Size
                         </label>
                         <p class="form-help">Text chunk size for AI processing (larger = better context)</p>
-                        <select name="chunk_size" id="chunk_size" class="form-select" required>
+                        <select name="chunk_size" id="chunk_size" class="form-select" required aria-required="true">
                             <option value="2000">2,000 tokens (Fastest)</option>
                             <option value="4000" selected>4,000 tokens (Balanced)</option>
                             <option value="8000">8,000 tokens (Best Context)</option>
@@ -242,7 +242,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                             <i class="fas fa-comments"></i> Dialogue Style
                         </label>
                         <p class="form-help">Format for character dialogue in the manga script</p>
-                        <select name="dialogue_style" id="dialogue_style" class="form-select" required>
+                        <select name="dialogue_style" id="dialogue_style" class="form-select" required aria-required="true">
                             <option value="standard" selected>Standard Manga Format</option>
                             <option value="dramatic">Dramatic/Emphasis</option>
                             <option value="minimal">Minimal/Simple</option>
@@ -255,7 +255,7 @@ $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
                             <i class="fas fa-file-export"></i> Output Format
                         </label>
                         <p class="form-help">Format of the generated manga script</p>
-                        <select name="output_format" id="output_format" class="form-select" required>
+                        <select name="output_format" id="output_format" class="form-select" required aria-required="true">
                             <option value="epub" selected>EPUB E-book</option>
                             <option value="script">Screenplay Format</option>
                             <option value="detailed">Detailed Storyboard</option>
