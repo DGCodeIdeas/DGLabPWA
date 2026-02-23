@@ -684,12 +684,12 @@ class NovelToManga implements ToolInterface
      */
     private function htmlToText(string $html): string
     {
-        // Remove script and style tags
-        $html = preg_replace('/<script[^>]*>.*?<\/script>/is', '', $html);
-        $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
-        
-        // Replace common block elements with newlines
-        $html = preg_replace('/<\/(p|div|h[1-6]|br)\s*>/i', "\n", $html);
+        // Remove script/style tags and replace block elements with newlines (optimized with arrays)
+        $html = preg_replace(
+            ['/<script[^>]*>.*?<\/script>/is', '/<style[^>]*>.*?<\/style>/is', '/<\/(p|div|h[1-6]|br)\s*>/i'],
+            ['', '', "\n"],
+            $html
+        );
         
         // Strip remaining tags
         $text = strip_tags($html);
@@ -697,9 +697,8 @@ class NovelToManga implements ToolInterface
         // Decode HTML entities
         $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         
-        // Normalize whitespace
-        $text = preg_replace('/\s+/', ' ', $text);
-        $text = preg_replace('/\n\s*\n/', "\n\n", $text);
+        // Normalize whitespace (optimized with arrays)
+        $text = preg_replace(['/\s+/', '/\n\s*\n/'], [' ', "\n\n"], $text);
         
         return trim($text);
     }

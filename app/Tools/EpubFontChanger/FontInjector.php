@@ -110,7 +110,7 @@ class FontInjector
     }
 
     /**
-     * Update CSS files with new font
+     * Update CSS files with new font (optimized performance)
      * 
      * @param string $extractPath Extracted EPUB path
      * @param array $config Font configuration
@@ -123,6 +123,7 @@ class FontInjector
         $fontSize = $config['font_size'] ?? 16;
         $lineHeight = $config['line_height'] ?? 1.6;
         $fontWeight = $config['font_weight'] ?? '400';
+        $fullFontStack = "'{$fontFamily}', {$fallbackFonts}";
         
         // Find all CSS files
         $cssFiles = $this->findCssFiles($extractPath);
@@ -132,21 +133,45 @@ class FontInjector
             
             // Add @font-face rules if embedding
             if ($config['embed_font'] && $config['font_source'] !== 'system') {
-                $fontFaceRules = $this->generateFontFaceRules($config);
-                $cssContent = $fontFaceRules . "\n" . $cssContent;
+                $cssContent = $this->generateFontFaceRules($config) . "\n" . $cssContent;
             }
             
-            // Update font-family declarations
+            // 1. Update font-family (keeps its own logic/callback)
             $cssContent = $this->updateFontFamily($cssContent, $fontFamily, $fallbackFonts, $config);
             
-            // Update font-size
-            $cssContent = $this->updateFontSize($cssContent, $fontSize);
+            // 2. Consolidate other replacements into a single pass
+            $patterns = [
+                '/font-size\s*:\s*\d+(?:\.\d+)?(?:px|pt|em|rem|%);/i',
+                '/line-height\s*:\s*\d+(?:\.\d+)?;?/i'
+            ];
+            $replacements = [
+                'font-size: ' . $fontSize . 'px;',
+                'line-height: ' . $lineHeight . ';'
+            ];
             
-            // Update line-height
-            $cssContent = $this->updateLineHeight($cssContent, $lineHeight);
+            if ($fontWeight !== '400' && $fontWeight !== 'normal') {
+                $patterns[] = '/font-weight\s*:\s*(?:normal|bold|\d+);?/i';
+                $replacements[] = 'font-weight: ' . $fontWeight . ';';
+            }
+
+            $cssContent = preg_replace($patterns, $replacements, $cssContent);
+
+            // 3. Add missing defaults to body (consolidated check)
+            $hasBody = strpos($cssContent, 'body') !== false;
+            $bodyUpdates = "";
+            if (!$hasBody || !preg_match('/body\s*\{[^}]*font-family/i', $cssContent)) {
+                $bodyUpdates .= "  font-family: {$fullFontStack};\n";
+            }
+            if (!$hasBody || !preg_match('/body\s*\{[^}]*font-size/i', $cssContent)) {
+                $bodyUpdates .= "  font-size: {$fontSize}px;\n";
+            }
+            if (!$hasBody || !preg_match('/body\s*\{[^}]*line-height/i', $cssContent)) {
+                $bodyUpdates .= "  line-height: {$lineHeight};\n";
+            }
             
-            // Update font-weight
-            $cssContent = $this->updateFontWeight($cssContent, $fontWeight);
+            if ($bodyUpdates) {
+                $cssContent .= "\nbody {\n" . $bodyUpdates . "}\n";
+            }
             
             file_put_contents($cssFile, $cssContent);
         }
@@ -358,74 +383,6 @@ class FontInjector
         return $css;
     }
 
-    /**
-     * Update font-size in CSS
-     * 
-     * @param string $css CSS content
-     * @param int $fontSize Font size in pixels
-     * @return string Updated CSS
-     */
-    private function updateFontSize(string $css, int $fontSize): string
-    {
-        // Update existing font-size declarations
-        $pattern = '/font-size\s*:\s*\d+(?:\.\d+)?(?:px|pt|em|rem|%);/i';
-        $replacement = 'font-size: ' . $fontSize . 'px;';
-        
-        $css = preg_replace($pattern, $replacement, $css);
-        
-        // Add to body if not present
-        if (!preg_match('/body\s*\{[^}]*font-size/i', $css)) {
-            $css .= "\nbody { font-size: {$fontSize}px; }\n";
-        }
-        
-        return $css;
-    }
-
-    /**
-     * Update line-height in CSS
-     * 
-     * @param string $css CSS content
-     * @param float $lineHeight Line height
-     * @return string Updated CSS
-     */
-    private function updateLineHeight(string $css, float $lineHeight): string
-    {
-        // Update existing line-height declarations
-        $pattern = '/line-height\s*:\s*\d+(?:\.\d+)?;?/i';
-        $replacement = 'line-height: ' . $lineHeight . ';';
-        
-        $css = preg_replace($pattern, $replacement, $css);
-        
-        // Add to body if not present
-        if (!preg_match('/body\s*\{[^}]*line-height/i', $css)) {
-            $css .= "\nbody { line-height: {$lineHeight}; }\n";
-        }
-        
-        return $css;
-    }
-
-    /**
-     * Update font-weight in CSS
-     * 
-     * @param string $css CSS content
-     * @param string $fontWeight Font weight
-     * @return string Updated CSS
-     */
-    private function updateFontWeight(string $css, string $fontWeight): string
-    {
-        // Only update if not 'normal' (400)
-        if ($fontWeight === '400' || $fontWeight === 'normal') {
-            return $css;
-        }
-        
-        // Update existing font-weight declarations
-        $pattern = '/font-weight\s*:\s*(?:normal|bold|\d+);?/i';
-        $replacement = 'font-weight: ' . $fontWeight . ';';
-        
-        $css = preg_replace($pattern, $replacement, $css);
-        
-        return $css;
-    }
 
     /**
      * Find all CSS files in extracted EPUB
