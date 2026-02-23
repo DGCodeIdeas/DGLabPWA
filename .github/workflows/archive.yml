@@ -1,0 +1,22 @@
+name: Archive Server Content
+
+on:
+  workflow_dispatch:
+
+jobs:
+  archive:
+    name: 📦 Archive htdocs
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Run Archive Script
+        run: |
+          sudo apt-get install -y lftp
+          lftp -c "open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}; \
+          set ftp:ssl-allow no; \
+          mkdir -p htdocs/old; \
+          cd htdocs; \
+          # Try to move all visible files and folders to old/
+          # We use a loop in lftp to avoid glob expansion issues
+          glob -a mv * old/ || echo 'Some files could not be moved or no files found'; \
+          glob -a mv .* old/ || echo 'Some dotfiles could not be moved or no dotfiles found'; \
+          ls -R"
