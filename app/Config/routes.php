@@ -93,11 +93,18 @@ $router->group(['prefix' => 'api/v1'], function (Router $router) {
 });
 
 // =============================================================================
-// ASSET ROUTES (for bundled assets)
+// ASSET ROUTES
 // =============================================================================
 
+// Specific routes for bundled assets (higher priority)
 $router->get('/assets/css/{file}', 'AssetController@css', 'assets.css');
 $router->get('/assets/js/{file}', 'AssetController@js', 'assets.js');
+
+// Generic route for any other asset
+$router->get('/assets/{path:any}', 'AssetController@serve', 'assets.serve');
+
+// Root level assets
+$router->get('/favicon.ico', 'AssetController@favicon', 'favicon');
 
 // =============================================================================
 // PWA ROUTES

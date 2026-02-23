@@ -1,0 +1,72 @@
+# =============================================================================
+# DGLab PWA - Root Apache Configuration
+# =============================================================================
+# This file ensures that public/index.php is the only physical entry point
+# and masks the "public/" directory for InfinityFree hosting.
+# =============================================================================
+
+# Enable rewrite engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Set Base URL if needed
+    # RewriteBase /
+
+    # 1. Redirect /public/index.php to / (SEO and masking)
+    RewriteCond %{THE_REQUEST} /public/index\.php [NC]
+    RewriteRule ^public/index\.php(.*)$ /$1 [R=301,L]
+
+    # 2. Redirect direct /public/ access to root (masking)
+    RewriteCond %{THE_REQUEST} /public/ [NC]
+    RewriteRule ^public/(.*)$ /$1 [R=301,L]
+
+    # 3. Block direct access to internal directories
+    # Note: assets/ is NOT blocked here because it is handled by the PHP router
+    RewriteRule ^(app|config|storage|docs|database|tests|vendor|\.git)/ - [F,L]
+
+    # 4. Block sensitive files in root (Apache 2.4 syntax)
+    <FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|\.env|Readme\.md|LICENSE|PROJECT_ANALYSIS\.md|PROJECT_SUMMARY\.md)$">
+        Require all denied
+    </FilesMatch>
+
+    # 5. Route API requests to index.php with flags
+    RewriteCond %{REQUEST_URI} ^/api/
+    RewriteCond %{REQUEST_URI} !^/public/index.php
+    RewriteRule ^(.*)$ public/index.php?__route__=$1&__type__=api [QSA,L]
+
+    # 6. Route all other requests to public/index.php
+    RewriteCond %{REQUEST_URI} !^/public/index.php
+    RewriteRule ^(.*)$ public/index.php?__route__=$1 [QSA,L]
+</IfModule>
+
+# =============================================================================
+# SECURITY SETTINGS
+# =============================================================================
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Disable directory indexing
+Options -Indexes
+
+# Set default index
+DirectoryIndex public/index.php
+
+# =============================================================================
+# PERFORMANCE SETTINGS
+# =============================================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# =============================================================================
+# PROTECT DOT FILES
+# =============================================================================
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
