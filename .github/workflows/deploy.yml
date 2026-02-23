@@ -1,0 +1,63 @@
+name: FTP Deploy
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - DGLab
+  workflow_dispatch:
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Create config.php
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+        run: |
+          php -r "
+          \$config = file_get_contents('config/config.example.php');
+
+          function replaceConfig(\$content, \$key, \$value) {
+              return preg_replace(
+                  \"/'\" . \$key . \"'\s*=>\s*['\\\"](.*?)['\\\"]/\",
+                  \"'\" . \$key . \"'        => '\" . \$value . \"'\",
+                  \$content
+              );
+          }
+
+          \$config = replaceConfig(\$config, 'host', getenv('DB_HOST'));
+          \$config = replaceConfig(\$config, 'database', getenv('DB_NAME'));
+          \$config = replaceConfig(\$config, 'username', getenv('DB_USER'));
+          \$config = replaceConfig(\$config, 'password', getenv('DB_PASS'));
+
+          file_put_contents('config/config.php', \$config);
+          "
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /htdocs/
+          exclude: |
+            **/.git*
+            **/.github*
+            **/docs/**
+            config/config.example.php
+            Readme.md
+            LICENSE
+            PROJECT_ANALYSIS.md
+            PROJECT_SUMMARY.md
+            old/**
+          delete-clean: true
