@@ -65,8 +65,15 @@ class AssetController extends Controller
      */
     public function serve(string $path): void
     {
-        // Basic sanitization
-        $path = ltrim(str_replace(['../', '..\\'], '', $path), '/');
+        // 1. Basic sanitization and normalization
+        $path = str_replace(["\0", "\r", "\n"], '', $path);
+        $path = ltrim($path, '/\\');
+
+        // 2. Prevent directory traversal early (Defense in depth)
+        if (strpos($path, '..') !== false) {
+            $this->handleNotFound($path);
+            return;
+        }
 
         // Define allowed roots and their absolute paths
         $allowedRoots = [
@@ -82,17 +89,25 @@ class AssetController extends Controller
             $fullPath = $root . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
             $realPath = realpath($fullPath);
 
-            // Security checks:
-            // 1. File must exist
-            // 2. Must be a file, not a directory
-            // 3. Must be within the allowed root (prevents traversal)
-            if ($realPath && is_file($realPath) && strpos($realPath, $root) === 0) {
+            // 3. Robust security checks:
+            // - File must exist and be a physical file
+            // - Must be within the allowed root (prevents traversal and sibling dir access)
+            if ($realPath && is_file($realPath)) {
+
+                // Ensure the real path starts with the root path followed by a directory separator
+                // This prevents matching sibling directories (e.g., /assets_secret matching /assets)
+                $rootWithSeparator = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+                if (strpos($realPath, $rootWithSeparator) !== 0) {
+                    continue;
+                }
 
                 $filename = basename($realPath);
                 $extension = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
 
                 // 4. Block sensitive files and hidden files
-                if ($extension === 'php' || strpos($filename, '.') === 0 || $filename === 'config.php') {
+                $blockedExtensions = ['php', 'php3', 'php4', 'php5', 'phtml', 'phps', 'htaccess', 'htpasswd', 'env', 'config', 'log', 'sql'];
+                if (in_array($extension, $blockedExtensions) || strpos($filename, '.') === 0 || $filename === 'config.php') {
                     continue;
                 }
 
