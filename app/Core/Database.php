@@ -62,12 +62,12 @@ class Database
      * 
      * @param array $config Database configuration
      */
-    private function __construct(array $config = [])
+    private function __construct(array $configOverride = [])
     {
-        global $config as $globalConfig;
-        $this->config = array_merge($globalConfig['database'] ?? [], $config);
+        global $config;
+        $this->config = array_merge($config['database'] ?? [], $configOverride);
         $this->loggingEnabled = $this->config['log_queries'] ?? false;
-        $this->connect();
+        // Connection is deferred until needed (lazy loading)
     }
 
     /**
@@ -188,12 +188,15 @@ class Database
     }
 
     /**
-     * Get raw PDO connection
+     * Get raw PDO connection, establishing it if necessary
      * 
      * @return PDO PDO instance
      */
     public function getConnection(): PDO
     {
+        if ($this->connection === null) {
+            $this->connect();
+        }
         return $this->connection;
     }
 
@@ -212,7 +215,7 @@ class Database
     {
         $this->logQuery($sql, $params);
         
-        $statement = $this->connection->prepare($sql);
+        $statement = $this->getConnection()->prepare($sql);
         $statement->execute($params);
         
         $this->lastStatement = $statement;
@@ -378,7 +381,7 @@ class Database
      */
     public function beginTransaction(): bool
     {
-        return $this->connection->beginTransaction();
+        return $this->getConnection()->beginTransaction();
     }
 
     /**
@@ -388,7 +391,7 @@ class Database
      */
     public function commit(): bool
     {
-        return $this->connection->commit();
+        return $this->getConnection()->commit();
     }
 
     /**
@@ -398,7 +401,7 @@ class Database
      */
     public function rollback(): bool
     {
-        return $this->connection->rollBack();
+        return $this->getConnection()->rollBack();
     }
 
     /**
@@ -429,6 +432,9 @@ class Database
      */
     public function inTransaction(): bool
     {
+        if ($this->connection === null) {
+            return false;
+        }
         return $this->connection->inTransaction();
     }
 
@@ -467,7 +473,7 @@ class Database
      */
     public function escape($value): string
     {
-        return $this->connection->quote($value);
+        return $this->getConnection()->quote($value);
     }
 
     /**
@@ -477,7 +483,7 @@ class Database
      */
     public function lastInsertId(): string
     {
-        return $this->connection->lastInsertId();
+        return $this->getConnection()->lastInsertId();
     }
 
     /**

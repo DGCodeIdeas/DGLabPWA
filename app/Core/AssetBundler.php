@@ -97,9 +97,17 @@ class AssetBundler
     {
         $files = is_array($files) ? $files : [$files];
         
-        // Check cache
+        // Runtime cache to avoid redundant checks in the same request
+        $cacheKey = 'scss:' . $outputName;
+        if (isset(self::$bundledAssets[$cacheKey])) {
+            return self::$bundledAssets[$cacheKey];
+        }
+
+        // Check disk cache
         if ($this->cacheEnabled && $this->isCacheValid($files, $outputName)) {
-            return $this->getCacheUrl($outputName);
+            $url = $this->getCacheUrl($outputName);
+            self::$bundledAssets[$cacheKey] = $url;
+            return $url;
         }
         
         // Combine all SCSS content
@@ -125,7 +133,9 @@ class AssetBundler
         // Save to cache
         $this->saveToCache($outputName, $cssContent);
         
-        return $this->getCacheUrl($outputName);
+        $url = $this->getCacheUrl($outputName);
+        self::$bundledAssets[$cacheKey] = $url;
+        return $url;
     }
 
     /**
@@ -316,20 +326,12 @@ class AssetBundler
      */
     public function minifyCss(string $css): string
     {
-        // Remove comments
-        $css = preg_replace('/\/\*[^*]*\*+(?:[^\/][^*]*\*+)*\//', '', $css);
-        
-        // Remove whitespace
-        $css = preg_replace('/\s+/', ' ', $css);
-        
-        // Remove unnecessary spaces
-        $css = preg_replace('/\s*([{}:;,])\s*/', '$1', $css);
-        
-        // Remove trailing semicolons
-        $css = preg_replace('/;}/', '}', $css);
-        
-        // Trim
-        return trim($css);
+        // Remove comments, compress whitespace, and remove spaces around punctuation
+        return trim(preg_replace(
+            ['/\/\*.*?\*\//s', '/\s+/', '/\s*([{}:;,])\s*/', '/;}/'],
+            ['', ' ', '$1', '}'],
+            $css
+        ));
     }
 
     // =============================================================================
@@ -347,9 +349,17 @@ class AssetBundler
     {
         $files = is_array($files) ? $files : [$files];
         
-        // Check cache
+        // Runtime cache to avoid redundant checks in the same request
+        $cacheKey = 'js:' . $outputName;
+        if (isset(self::$bundledAssets[$cacheKey])) {
+            return self::$bundledAssets[$cacheKey];
+        }
+
+        // Check disk cache
         if ($this->cacheEnabled && $this->isCacheValid($files, $outputName, 'js')) {
-            return $this->getCacheUrl($outputName);
+            $url = $this->getCacheUrl($outputName);
+            self::$bundledAssets[$cacheKey] = $url;
+            return $url;
         }
         
         // Combine all JS content
@@ -373,7 +383,9 @@ class AssetBundler
         // Save to cache
         $this->saveToCache($outputName, $jsContent);
         
-        return $this->getCacheUrl($outputName);
+        $url = $this->getCacheUrl($outputName);
+        self::$bundledAssets[$cacheKey] = $url;
+        return $url;
     }
 
     /**
@@ -384,20 +396,18 @@ class AssetBundler
      */
     public function minifyJs(string $js): string
     {
-        // Remove single-line comments
-        $js = preg_replace('/\/\/.*$/m', '', $js);
-        
-        // Remove multi-line comments
-        $js = preg_replace('/\/\*[\s\S]*?\*\//', '', $js);
-        
-        // Remove extra whitespace
-        $js = preg_replace('/\s+/', ' ', $js);
-        
-        // Remove whitespace around operators and punctuation
-        $js = preg_replace('/\s*([=+\-*\/<>!&|,;{}\(\)\[\]])\s*/', '$1', $js);
-        
-        // Trim
-        return trim($js);
+        // Combined regex for better performance
+        // We use a lookbehind to avoid stripping URLs (://) in single-line comments
+        return trim(preg_replace(
+            [
+                '/\/\*[\s\S]*?\*\//',                    // Multi-line comments
+                '/(?<!:)\/\/.*$/m',                      // Single-line comments (with :// protection)
+                '/\s+/',                                  // Whitespace
+                '/\s*([=+\-*\/<>!&|,;{}\(\)\[\]])\s*/'   // Operators and punctuation
+            ],
+            ['', '', ' ', '$1'],
+            $js
+        ));
     }
 
     // =============================================================================
