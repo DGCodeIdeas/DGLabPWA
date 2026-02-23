@@ -133,6 +133,8 @@ class UploadController extends Controller
      */
     public function cancel(string $uploadId): void
     {
+        $this->requireCsrfToken();
+
         $this->uploader->cleanupChunks($uploadId, true);
         
         // Remove from session
