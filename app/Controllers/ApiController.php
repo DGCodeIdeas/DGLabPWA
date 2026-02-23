@@ -245,11 +245,7 @@ class ApiController extends Controller
     public function saveApiKey(): void
     {
         // Verify CSRF token
-        $csrfToken = $this->input('csrf_token');
-        if (!$this->verifyCsrfToken($csrfToken)) {
-            $this->error('Invalid CSRF token', 403);
-            return;
-        }
+        $this->requireCsrfToken();
         
         // Get parameters
         $provider = $this->input('provider');
@@ -306,11 +302,7 @@ class ApiController extends Controller
     public function deleteApiKey(): void
     {
         // Verify CSRF token
-        $csrfToken = $this->input('csrf_token');
-        if (!$this->verifyCsrfToken($csrfToken)) {
-            $this->error('Invalid CSRF token', 403);
-            return;
-        }
+        $this->requireCsrfToken();
         
         // Get parameters
         $provider = $this->input('provider');
@@ -420,20 +412,4 @@ class ApiController extends Controller
         return session_id() ?: 'guest_' . uniqid();
     }
 
-    /**
-     * Verify CSRF token
-     * 
-     * @param string $token Token to verify
-     * @return bool True if valid
-     */
-    private function verifyCsrfToken(?string $token): bool
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        // In a production environment, validate against stored CSRF token
-        // For now, accept any non-empty token
-        return !empty($token);
-    }
 }

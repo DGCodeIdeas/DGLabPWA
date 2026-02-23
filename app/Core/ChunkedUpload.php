@@ -164,6 +164,8 @@ class ChunkedUpload
      */
     public function uploadChunk(string $uploadId, int $chunkIndex, string $chunkData): array
     {
+        $this->validateUploadId($uploadId);
+
         $sessionPath = $this->chunksPath . '/' . $uploadId;
         $metadataPath = $sessionPath . '/metadata.json';
         
@@ -211,6 +213,8 @@ class ChunkedUpload
      */
     public function handleFileChunk(string $uploadId, int $chunkIndex, array $file): array
     {
+        $this->validateUploadId($uploadId);
+
         if (!isset($file['tmp_name']) || !file_exists($file['tmp_name'])) {
             throw new \Exception('No file uploaded');
         }
@@ -232,6 +236,8 @@ class ChunkedUpload
      */
     public function finalizeUpload(string $uploadId): array
     {
+        $this->validateUploadId($uploadId);
+
         $sessionPath = $this->chunksPath . '/' . $uploadId;
         $metadataPath = $sessionPath . '/metadata.json';
         
@@ -303,6 +309,8 @@ class ChunkedUpload
      */
     public function getProgress(string $uploadId): array
     {
+        $this->validateUploadId($uploadId);
+
         $sessionPath = $this->chunksPath . '/' . $uploadId;
         $metadataPath = $sessionPath . '/metadata.json';
         
@@ -355,6 +363,8 @@ class ChunkedUpload
      */
     public function resume(string $uploadId): array
     {
+        $this->validateUploadId($uploadId);
+
         $progress = $this->getProgress($uploadId);
         
         if ($progress['status'] === 'not_found') {
@@ -387,6 +397,8 @@ class ChunkedUpload
      */
     public function cleanupChunks(string $uploadId, bool $removeMetadata = true): void
     {
+        $this->validateUploadId($uploadId);
+
         $sessionPath = $this->chunksPath . '/' . $uploadId;
         
         if (!is_dir($sessionPath)) {
@@ -499,6 +511,20 @@ class ChunkedUpload
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         
         return in_array($extension, $this->allowedExtensions, true);
+    }
+
+    /**
+     * Validate upload ID format to prevent path traversal
+     *
+     * @param string $uploadId Upload session ID
+     * @return void
+     * @throws \Exception If invalid
+     */
+    private function validateUploadId(string $uploadId): void
+    {
+        if (!preg_match('/^[a-f0-9]{32}$/', $uploadId)) {
+            throw new \Exception('Invalid upload ID');
+        }
     }
 
     // =============================================================================

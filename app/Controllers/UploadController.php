@@ -43,6 +43,8 @@ class UploadController extends Controller
      */
     public function init(): void
     {
+        $this->requireCsrfToken();
+
         $filename = $this->input('filename');
         $totalSize = (int) $this->input('total_size');
         $mimeType = $this->input('mime_type');
@@ -80,6 +82,8 @@ class UploadController extends Controller
      */
     public function chunk(): void
     {
+        $this->requireCsrfToken();
+
         $uploadId = $this->input('upload_id');
         $chunkIndex = (int) $this->input('chunk_index');
         
