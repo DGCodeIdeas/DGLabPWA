@@ -1,0 +1,5 @@
+node_modules/
+screenshots/
+pnpm-lock.yaml
+package.json
+test_sample.epub
