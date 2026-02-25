@@ -9,6 +9,7 @@
  */
 
 use DGLab\Tools\NovelToManga\NovelToManga;
+use DGLab\Tools\NovelToManga\ApiKeyManager;
 
 $isNovelToManga = $tool instanceof NovelToManga;
 $userId = session_id() ?? 'guest_' . uniqid();
@@ -19,317 +20,416 @@ $hasClaudeKey = $isNovelToManga && $tool->hasApiKey($userId, 'claude');
 $hasGeminiKey = $isNovelToManga && $tool->hasApiKey($userId, 'gemini');
 ?>
 <!-- Tool Header -->
-<section class="bg-gradient-to-r from-indigo-600 to-purple-700 py-12 lg:py-16 text-white">
+<section class="tool-header">
     <div class="container">
-        <div class="row align-items-center g-6">
-            <div class="col-auto">
-                <div class="bg-white/20 p-4 rounded-3xl shadow-inner d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                    <i class="fas <?php echo $tool->getIcon(); ?> fs-1 text-white"></i>
-                </div>
+        <div class="tool-header-content">
+            <div class="tool-header-icon">
+                <i class="fas <?php echo $tool->getIcon(); ?>"></i>
             </div>
-            <div class="col">
-                <nav aria-label="breadcrumb" class="mb-2">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item text-white/70"><a href="<?php echo $base_url; ?>/tools" class="text-white/70 text-decoration-none hover:text-white transition-colors">Tools</a></li>
-                        <li class="breadcrumb-item text-white active fw-medium" aria-current="page"><?php echo htmlspecialchars($tool->getCategory()); ?></li>
-                    </ol>
-                </nav>
-                <h1 class="display-5 fw-bold mb-2"><?php echo htmlspecialchars($tool->getName()); ?></h1>
-                <p class="fs-5 opacity-90 mb-0 max-w-2xl"><?php echo htmlspecialchars($tool->getDescription()); ?></p>
+            <div class="tool-header-info">
+                <span class="tool-header-category"><?php echo htmlspecialchars($tool->getCategory()); ?></span>
+                <h1 class="tool-header-title"><?php echo htmlspecialchars($tool->getName()); ?></h1>
+                <p class="tool-header-description"><?php echo htmlspecialchars($tool->getDescription()); ?></p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Tool Interface -->
-<section class="py-12 lg:py-16 bg-gray-50">
+<section class="tool-interface">
     <div class="container">
-        <div class="row g-8">
-            <!-- Left Column: Upload & Info -->
-            <div class="col-lg-5">
-                <!-- Upload Panel -->
-                <div class="bg-white p-6 p-md-8 rounded-3xl border shadow-sm mb-8">
-                    <h2 class="h4 fw-bold text-gray-900 mb-6 d-flex align-items-center gap-2">
-                        <i class="fas fa-cloud-upload-alt text-indigo-600"></i>
-                        1. Upload Novel (EPUB)
-                    </h2>
-
-                    <div class="position-relative cursor-pointer transition-all hover:bg-gray-50 border-2 border-dashed border-gray-300 rounded-3xl p-10 text-center mb-4" id="upload-zone">
-                        <input type="file" id="file-input" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer"
-                               accept="<?php echo implode(',', $tool->getSupportedTypes()); ?>"
-                               data-max-size="<?php echo $tool->getMaxFileSize(); ?>">
-                        <div class="upload-zone-content">
-                            <div class="bg-gray-100 text-gray-400 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 64px; height: 64px;">
-                                <i class="fas fa-book fs-3"></i>
-                            </div>
-                            <p class="fs-5 text-gray-900 mb-1 fw-semibold">Click to upload novel</p>
-                            <p class="text-gray-500 mb-0 text-sm">EPUB files only (Max <?php echo number_format($tool->getMaxFileSize() / 1024 / 1024, 0); ?> MB)</p>
-                        </div>
-                    </div>
-
-                    <!-- Upload Progress -->
-                    <div class="mb-4" id="upload-progress" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-sm fw-bold text-indigo-600">Uploading...</span>
-                            <span class="text-sm text-gray-500" id="progress-text">0%</span>
-                        </div>
-                        <div class="progress" style="height: 10px; border-radius: 10px;">
-                            <div class="progress-bar bg-indigo-600 rounded-pill" role="progressbar" id="progress-fill" style="width: 0%"></div>
-                        </div>
-                    </div>
-
-                    <!-- File Info -->
-                    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 d-flex align-items-center gap-4" id="file-info" style="display: none;">
-                        <div class="bg-indigo-600 text-white rounded-xl d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                            <i class="fas fa-file-alt fs-5"></i>
-                        </div>
-                        <div class="flex-grow-1 min-w-0">
-                            <p class="text-gray-900 fw-bold mb-0 text-truncate" id="file-name"></p>
-                            <p class="text-indigo-600 text-xs mb-0" id="file-size"></p>
-                        </div>
-                        <button type="button" class="btn btn-light btn-sm rounded-circle p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors border-0" id="remove-file" aria-label="Remove file">
-                            <i class="fas fa-times"></i>
-                        </button>
+        <div class="tool-interface-grid">
+            <!-- Upload Section -->
+            <div class="tool-panel tool-upload-panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Upload Novel (EPUB)
+                </h2>
+                
+                <div class="upload-zone" id="upload-zone">
+                    <input type="file" id="file-input" class="file-input" 
+                           accept="<?php echo implode(',', $tool->getSupportedTypes()); ?>"
+                           data-max-size="<?php echo $tool->getMaxFileSize(); ?>">
+                    <div class="upload-zone-content">
+                        <i class="fas fa-book upload-zone-icon"></i>
+                        <p class="upload-zone-text">
+                            <strong>Click to upload</strong> or drag and drop
+                        </p>
+                        <p class="upload-zone-hint">
+                            EPUB files only (Max <?php echo number_format($tool->getMaxFileSize() / 1024 / 1024, 0); ?> MB)
+                        </p>
                     </div>
                 </div>
                 
-                <!-- AI Info Card -->
-                <div class="bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-6 p-md-8 rounded-3xl shadow-lg">
-                    <h3 class="h5 fw-bold mb-4 d-flex align-items-center gap-2">
-                        <i class="fas fa-robot"></i>
-                        AI Processing
-                    </h3>
-                    <p class="opacity-90 mb-6 text-sm leading-relaxed">Your novel will be processed using AI to convert it into a structured manga script format.</p>
-                    <ul class="list-unstyled space-y-3 mb-0">
-                        <li class="d-flex align-items-center gap-3 text-sm">
-                            <i class="fas fa-check-circle text-emerald-400"></i>
-                            <span>Contextual chunking for optimal results</span>
-                        </li>
-                        <li class="d-flex align-items-center gap-3 text-sm">
-                            <i class="fas fa-check-circle text-emerald-400"></i>
-                            <span>Character dialogue extraction</span>
-                        </li>
-                        <li class="d-flex align-items-center gap-3 text-sm">
-                            <i class="fas fa-check-circle text-emerald-400"></i>
-                            <span>Scene descriptions and panel layouts</span>
-                        </li>
-                        <li class="d-flex align-items-center gap-3 text-sm">
-                            <i class="fas fa-check-circle text-emerald-400"></i>
-                            <span>Preserves chapter structure</span>
-                        </li>
+                <!-- Upload Progress -->
+                <div class="upload-progress" id="upload-progress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="progress-fill"></div>
+                    </div>
+                    <p class="progress-text" id="progress-text">0%</p>
+                </div>
+                
+                <!-- File Info -->
+                <div class="file-info" id="file-info" style="display: none;">
+                    <div class="file-info-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="file-info-details">
+                        <p class="file-info-name" id="file-name"></p>
+                        <p class="file-info-size" id="file-size"></p>
+                    </div>
+                    <button type="button" class="file-info-remove" id="remove-file" title="Remove file" aria-label="Remove file">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- AI Processing Info -->
+                <div class="ai-info-card" id="ai-info">
+                    <h4><i class="fas fa-robot"></i> AI Processing</h4>
+                    <p>Your novel will be processed using AI to convert it into a structured manga script format.</p>
+                    <ul class="ai-features">
+                        <li><i class="fas fa-check"></i> Contextual chunking for optimal results</li>
+                        <li><i class="fas fa-check"></i> Character dialogue extraction</li>
+                        <li><i class="fas fa-check"></i> Scene descriptions and panel layouts</li>
+                        <li><i class="fas fa-check"></i> Preserves chapter structure</li>
                     </ul>
                 </div>
             </div>
             
-            <!-- Right Column: Options & Process -->
-            <div class="col-lg-7">
-                <div class="bg-white p-6 p-md-8 rounded-3xl border shadow-sm">
-                    <h2 class="h4 fw-bold text-gray-900 mb-6 d-flex align-items-center gap-2">
-                        <i class="fas fa-cog text-indigo-600"></i>
-                        2. Conversion Options
-                    </h2>
+            <!-- Options Section -->
+            <div class="tool-panel tool-options-panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-cog"></i>
+                    Conversion Options
+                </h2>
+                
+                <form id="tool-options-form" class="tool-options-form">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                    <input type="hidden" name="upload_id" id="upload-id">
                     
-                    <form id="tool-options-form">
-                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                        <input type="hidden" name="upload_id" id="upload-id">
+                    <!-- AI Provider Selection -->
+                    <div class="form-group">
+                        <label for="ai_provider" class="form-label">
+                            <i class="fas fa-brain"></i> AI Provider
+                        </label>
+                        <p class="form-help">Select the AI service for processing your novel</p>
+                        <select name="ai_provider" id="ai_provider" class="form-select" required aria-required="true">
+                            <option value="openai" selected>
+                                OpenAI GPT (Free tier available)
+                            </option>
+                            <option value="claude">
+                                Anthropic Claude (Requires API key)
+                            </option>
+                            <option value="gemini">
+                                Google Gemini (Requires API key)
+                            </option>
+                        </select>
+                        <div class="provider-badge" id="provider-badge">
+                            <span class="badge badge-free">Free Tier Available</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Model Selection -->
+                    <div class="form-group">
+                        <label for="ai_model" class="form-label">
+                            <i class="fas fa-microchip"></i> AI Model
+                        </label>
+                        <p class="form-help">Choose the model based on quality and speed needs</p>
+                        <select name="ai_model" id="ai_model" class="form-select" required aria-required="true">
+                            <optgroup label="OpenAI Models" data-provider="openai">
+                                <option value="gpt-4o-mini" selected>GPT-4o Mini (Fast, Free)</option>
+                                <option value="gpt-4o">GPT-4o (Best Quality)</option>
+                            </optgroup>
+                            <optgroup label="Claude Models" data-provider="claude">
+                                <option value="claude-3-opus">Claude 3 Opus (Best Quality)</option>
+                                <option value="claude-3-sonnet">Claude 3 Sonnet (Balanced)</option>
+                                <option value="claude-3-haiku">Claude 3 Haiku (Fast)</option>
+                            </optgroup>
+                            <optgroup label="Gemini Models" data-provider="gemini">
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Best Quality)</option>
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    
+                    <!-- Content Mode -->
+                    <div class="form-group">
+                        <label for="content_mode" class="form-label">
+                            <i class="fas fa-shield-alt"></i> Content Mode
+                        </label>
+                        <p class="form-help">Select content filtering level for the output</p>
+                        <select name="content_mode" id="content_mode" class="form-select" required aria-required="true">
+                            <option value="censored" selected>Censored (Safe Content Only)</option>
+                            <option value="uncensored">Uncensored (Mature Content Allowed)</option>
+                        </select>
+                        <div class="content-warning" id="content-warning" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Uncensored mode may produce mature content. Use responsibly.</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom API Key Section -->
+                    <div class="form-group api-key-section">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i> Custom API Key
+                        </label>
+                        <p class="form-help">Use your own API key for dedicated processing</p>
                         
-                        <div class="row g-6">
-                            <!-- AI Provider -->
-                            <div class="col-md-6">
-                                <label for="ai_provider" class="form-label fw-bold text-gray-700 mb-2">
-                                    <i class="fas fa-brain me-1 text-indigo-500"></i> AI Provider
-                                </label>
-                                <select name="ai_provider" id="ai_provider" class="form-select rounded-xl py-2.5 shadow-sm border-gray-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 transition-all" required aria-required="true">
-                                    <option value="openai" selected>OpenAI GPT</option>
-                                    <option value="claude">Anthropic Claude</option>
-                                    <option value="gemini">Google Gemini</option>
-                                </select>
-                                <div id="provider-badge" class="mt-2 text-xs"></div>
+                        <label class="form-toggle">
+                            <input type="checkbox" name="use_custom_key" id="use_custom_key" value="1">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Use my own API key</span>
+                        </label>
+                        
+                        <div class="custom-key-input" id="custom-key-container" style="display: none;">
+                            <div class="input-group">
+                                <input type="password" 
+                                       name="custom_api_key" 
+                                       id="custom_api_key" 
+                                       class="form-input"
+                                       placeholder="Enter your API key"
+                                       autocomplete="off">
+                                <button type="button" class="btn btn-icon" id="toggle-key-visibility" title="Show/Hide API key" aria-label="Show/Hide API key">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                             </div>
-
-                            <!-- AI Model -->
-                            <div class="col-md-6">
-                                <label for="ai_model" class="form-label fw-bold text-gray-700 mb-2">
-                                    <i class="fas fa-microchip me-1 text-indigo-500"></i> AI Model
-                                </label>
-                                <select name="ai_model" id="ai_model" class="form-select rounded-xl py-2.5 shadow-sm border-gray-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 transition-all" required aria-required="true">
-                                    <optgroup label="OpenAI Models" data-provider="openai">
-                                        <option value="gpt-4o-mini" selected>GPT-4o Mini (Fast, Free)</option>
-                                        <option value="gpt-4o">GPT-4o (Best Quality)</option>
-                                    </optgroup>
-                                    <optgroup label="Claude Models" data-provider="claude">
-                                        <option value="claude-3-opus">Claude 3 Opus (Best Quality)</option>
-                                        <option value="claude-3-sonnet">Claude 3 Sonnet (Balanced)</option>
-                                        <option value="claude-3-haiku">Claude 3 Haiku (Fast)</option>
-                                    </optgroup>
-                                    <optgroup label="Gemini Models" data-provider="gemini">
-                                        <option value="gemini-1.5-pro">Gemini 1.5 Pro (Best Quality)</option>
-                                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast)</option>
-                                    </optgroup>
-                                </select>
+                            <div class="api-key-actions">
+                                <button type="button" class="btn btn-sm btn-primary" id="save-key-btn">
+                                    <i class="fas fa-save"></i> Save Key
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger" id="delete-key-btn" style="display: none;">
+                                    <i class="fas fa-trash"></i> Remove Saved Key
+                                </button>
                             </div>
+                            <p class="key-status" id="key-status"></p>
+                            <p class="form-help text-muted">
+                                <i class="fas fa-lock"></i> Your key is encrypted and stored securely.
+                            </p>
+                        </div>
+                        
+                        <!-- Stored Keys Info -->
+                        <div class="stored-keys-info" id="stored-keys-info">
+                            <?php if ($hasOpenAiKey || $hasClaudeKey || $hasGeminiKey): ?>
+                                <p class="stored-keys-label">
+                                    <i class="fas fa-check-circle text-success"></i> 
+                                    You have saved API keys for:
+                                </p>
+                                <ul class="stored-keys-list">
+                                    <?php if ($hasOpenAiKey): ?><li>OpenAI</li><?php endif; ?>
+                                    <?php if ($hasClaudeKey): ?><li>Claude</li><?php endif; ?>
+                                    <?php if ($hasGeminiKey): ?><li>Gemini</li><?php endif; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Chunk Size -->
+                    <div class="form-group">
+                        <label for="chunk_size" class="form-label">
+                            <i class="fas fa-cut"></i> Chunk Size
+                        </label>
+                        <p class="form-help">Text chunk size for AI processing (larger = better context)</p>
+                        <select name="chunk_size" id="chunk_size" class="form-select" required aria-required="true">
+                            <option value="2000">2,000 tokens (Fastest)</option>
+                            <option value="4000" selected>4,000 tokens (Balanced)</option>
+                            <option value="8000">8,000 tokens (Best Context)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Dialogue Style -->
+                    <div class="form-group">
+                        <label for="dialogue_style" class="form-label">
+                            <i class="fas fa-comments"></i> Dialogue Style
+                        </label>
+                        <p class="form-help">Format for character dialogue in the manga script</p>
+                        <select name="dialogue_style" id="dialogue_style" class="form-select" required aria-required="true">
+                            <option value="standard" selected>Standard Manga Format</option>
+                            <option value="dramatic">Dramatic/Emphasis</option>
+                            <option value="minimal">Minimal/Simple</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Output Format -->
+                    <div class="form-group">
+                        <label for="output_format" class="form-label">
+                            <i class="fas fa-file-export"></i> Output Format
+                        </label>
+                        <p class="form-help">Format of the generated manga script</p>
+                        <select name="output_format" id="output_format" class="form-select" required aria-required="true">
+                            <option value="epub" selected>EPUB E-book</option>
+                            <option value="script">Screenplay Format</option>
+                            <option value="detailed">Detailed Storyboard</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Toggle Options -->
+                    <div class="form-group toggle-options">
+                        <label class="form-label">
+                            <i class="fas fa-sliders-h"></i> Additional Options
+                        </label>
+                        
+                        <div class="toggle-grid">
+                            <label class="form-toggle">
+                                <input type="checkbox" name="preserve_chapters" id="preserve_chapters" value="1" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">Preserve Chapter Structure</span>
+                            </label>
                             
-                            <!-- Content Mode -->
-                            <div class="col-md-6">
-                                <label for="content_mode" class="form-label fw-bold text-gray-700 mb-2">
-                                    <i class="fas fa-shield-alt me-1 text-indigo-500"></i> Content Mode
-                                </label>
-                                <select name="content_mode" id="content_mode" class="form-select rounded-xl py-2.5 shadow-sm border-gray-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 transition-all" required aria-required="true">
-                                    <option value="censored" selected>Censored (Safe)</option>
-                                    <option value="uncensored">Uncensored (Mature)</option>
-                                </select>
-                                <div id="content-warning" class="mt-2 p-2 bg-amber-50 text-amber-700 rounded-lg text-xs border border-amber-100 d-none">
-                                    <i class="fas fa-exclamation-triangle me-1"></i> Uncensored mode may produce mature content.
-                                </div>
-                            </div>
-
-                            <!-- Chunk Size -->
-                            <div class="col-md-6">
-                                <label for="chunk_size" class="form-label fw-bold text-gray-700 mb-2">
-                                    <i class="fas fa-cut me-1 text-indigo-500"></i> Chunk Size
-                                </label>
-                                <select name="chunk_size" id="chunk_size" class="form-select rounded-xl py-2.5 shadow-sm border-gray-300" required aria-required="true">
-                                    <option value="2000">2,000 tokens (Fastest)</option>
-                                    <option value="4000" selected>4,000 tokens (Balanced)</option>
-                                    <option value="8000">8,000 tokens (Best Context)</option>
-                                </select>
-                            </div>
-
-                            <!-- API Key Section -->
-                            <div class="col-12">
-                                <div class="p-4 bg-gray-50 border rounded-2xl">
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input cursor-pointer" type="checkbox" role="switch" name="use_custom_key" id="use_custom_key" value="1">
-                                        <label class="form-check-label text-gray-700 fw-bold" for="use_custom_key">Use my own API key</label>
-                                    </div>
-
-                                    <div id="custom-key-container" class="d-none">
-                                        <div class="input-group mb-3">
-                                            <input type="password" name="custom_api_key" id="custom_api_key" class="form-control rounded-s-xl py-2.5 border-gray-300 focus:border-indigo-600" placeholder="Enter your API key">
-                                            <button type="button" class="btn btn-outline-secondary rounded-e-xl" id="toggle-key-visibility" aria-label="Toggle API key visibility">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </div>
-                                        <div class="d-flex gap-2 mb-3">
-                                            <button type="button" class="btn btn-indigo-600 text-white btn-sm rounded-pill px-4" id="save-key-btn" style="background-color: #4f46e5;">Save Key</button>
-                                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-4 d-none" id="delete-key-btn">Remove Saved Key</button>
-                                        </div>
-                                        <div id="key-status" class="text-xs mb-2 fw-medium"></div>
-                                        <p class="text-xs text-gray-500 mb-0"><i class="fas fa-lock me-1"></i> Your key is encrypted and stored securely.</p>
-                                    </div>
-
-                                    <div id="stored-keys-info" class="mt-3 pt-3 border-top d-none"></div>
-                                </div>
-                            </div>
-
-                            <!-- Toggles -->
-                            <div class="col-12">
-                                <div class="row g-4">
-                                    <div class="col-sm-6">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="preserve_chapters" id="preserve_chapters" value="1" checked>
-                                            <label class="form-check-label text-sm text-gray-600" for="preserve_chapters">Preserve Chapters</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="include_descriptions" id="include_descriptions" value="1" checked>
-                                            <label class="form-check-label text-sm text-gray-600" for="include_descriptions">Include Scene Descriptions</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <label class="form-toggle">
+                                <input type="checkbox" name="include_descriptions" id="include_descriptions" value="1" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">Include Scene Descriptions</span>
+                            </label>
                         </div>
-
-                        <!-- Submit -->
-                        <div class="mt-8 pt-6 border-top">
-                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill py-3 btn-gradient border-0 fw-bold shadow-lg d-flex align-items-center justify-content-center gap-2" id="process-btn" disabled aria-label="Convert to Manga Script">
-                                <i class="fas fa-magic"></i>
-                                <span>Convert to Manga Script</span>
-                            </button>
-                            <div class="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-700 d-flex gap-2">
-                                <i class="fas fa-info-circle mt-0.5"></i>
-                                <span>Processing may take 1-5 minutes depending on novel length.</span>
-                            </div>
+                    </div>
+                    
+                    <!-- Processing Info -->
+                    <div class="processing-info" id="processing-info">
+                        <div class="info-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Processing time depends on novel length and AI model selected.</span>
                         </div>
-                    </form>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Estimated: 1-5 minutes for average novel length.</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="process-btn" disabled>
+                        <i class="fas fa-magic"></i>
+                        Convert to Manga Script
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="tool-results" id="tool-results" style="display: none;">
+            <div class="tool-panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-check-circle"></i>
+                    Conversion Complete
+                </h2>
+                
+                <div class="result-content">
+                    <div class="result-info">
+                        <p class="result-filename" id="result-filename"></p>
+                        <p class="result-details" id="result-details"></p>
+                        <div class="result-stats" id="result-stats"></div>
+                    </div>
+                    
+                    <div class="result-actions">
+                        <a href="#" class="btn btn-primary" id="download-btn" download>
+                            <i class="fas fa-download"></i>
+                            Download Manga Script
+                        </a>
+                        <button type="button" class="btn btn-outline" id="process-another">
+                            <i class="fas fa-redo"></i>
+                            Convert Another
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <!-- Progress Panel -->
-        <div id="progress-panel" class="mt-12 d-none">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <div class="text-center mb-8">
-                    <div class="spinner-border text-indigo-600 mb-4" role="status"></div>
-                    <h3 class="h4 fw-bold text-gray-900">Converting Novel...</h3>
-                    <p id="progress-stage" class="text-gray-500">Initializing...</p>
+        <!-- Progress Section -->
+        <div class="tool-progress-panel" id="progress-panel" style="display: none;">
+            <div class="tool-panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Converting Novel...
+                </h2>
+                
+                <div class="progress-display">
+                    <div class="progress-bar progress-bar-large">
+                        <div class="progress-bar-fill" id="conversion-progress-fill"></div>
+                    </div>
+                    <p class="progress-percentage" id="conversion-progress-text">0%</p>
+                    <p class="progress-stage" id="progress-stage">Initializing...</p>
                 </div>
                 
-                <div class="px-md-10 mb-10">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-sm fw-bold text-indigo-600">Total Progress</span>
-                        <span class="text-sm text-gray-500" id="conversion-progress-text">0%</span>
+                <div class="progress-steps" id="progress-steps">
+                    <div class="step" data-step="extract">
+                        <i class="fas fa-file-archive"></i>
+                        <span>Extract EPUB</span>
                     </div>
-                    <div class="progress" style="height: 12px; border-radius: 12px;">
-                        <div class="progress-bar bg-gradient-to-r from-indigo-600 to-purple-600 rounded-pill" role="progressbar" id="conversion-progress-fill" style="width: 0%"></div>
+                    <div class="step" data-step="parse">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Parse Content</span>
                     </div>
-                </div>
-                
-                <div class="row g-4 text-center" id="progress-steps">
-                    <div class="col" data-step="extract">
-                        <div class="step-icon mx-auto mb-2 bg-gray-100 text-gray-400 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;"><i class="fas fa-file-archive"></i></div>
-                        <span class="text-xs fw-bold text-uppercase tracking-tighter d-block">Extract</span>
+                    <div class="step" data-step="chunk">
+                        <i class="fas fa-cut"></i>
+                        <span>Segment Text</span>
                     </div>
-                    <div class="col" data-step="parse">
-                        <div class="step-icon mx-auto mb-2 bg-gray-100 text-gray-400 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;"><i class="fas fa-file-alt"></i></div>
-                        <span class="text-xs fw-bold text-uppercase tracking-tighter d-block">Parse</span>
+                    <div class="step" data-step="ai">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Processing</span>
                     </div>
-                    <div class="col" data-step="chunk">
-                        <div class="step-icon mx-auto mb-2 bg-gray-100 text-gray-400 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;"><i class="fas fa-cut"></i></div>
-                        <span class="text-xs fw-bold text-uppercase tracking-tighter d-block">Segment</span>
+                    <div class="step" data-step="format">
+                        <i class="fas fa-paint-brush"></i>
+                        <span>Format Script</span>
                     </div>
-                    <div class="col" data-step="ai">
-                        <div class="step-icon mx-auto mb-2 bg-gray-100 text-gray-400 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;"><i class="fas fa-robot"></i></div>
-                        <span class="text-xs fw-bold text-uppercase tracking-tighter d-block">AI</span>
-                    </div>
-                    <div class="col" data-step="format">
-                        <div class="step-icon mx-auto mb-2 bg-gray-100 text-gray-400 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;"><i class="fas fa-paint-brush"></i></div>
-                        <span class="text-xs fw-bold text-uppercase tracking-tighter d-block">Format</span>
-                    </div>
-                    <div class="col" data-step="create">
-                        <div class="step-icon mx-auto mb-2 bg-gray-100 text-gray-400 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;"><i class="fas fa-book"></i></div>
-                        <span class="text-xs fw-bold text-uppercase tracking-tighter d-block">Finish</span>
+                    <div class="step" data-step="create">
+                        <i class="fas fa-book"></i>
+                        <span>Create EPUB</span>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Results Section -->
-        <div id="tool-results" class="mt-12 d-none">
-            <div class="bg-emerald-50 border border-emerald-100 p-8 rounded-3xl shadow-sm">
-                <div class="row align-items-center g-6">
-                    <div class="col-auto">
-                        <div class="bg-emerald-600 text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;"><i class="fas fa-check fs-3"></i></div>
-                    </div>
-                    <div class="col">
-                        <h2 class="h4 fw-bold text-emerald-900 mb-1">Conversion Complete!</h2>
-                        <p id="result-filename" class="text-emerald-700 mb-0"></p>
-                        <div id="result-stats" class="text-xs text-emerald-600 mt-2 d-flex gap-3"></div>
-                    </div>
-                    <div class="col-lg-auto">
-                        <div class="d-flex flex-wrap gap-3">
-                            <a href="#" class="btn btn-emerald-600 text-white px-8 rounded-pill fw-bold shadow-md hover:scale-105 transition-transform text-decoration-none d-flex align-items-center gap-2" id="download-btn" download style="background-color: #059669;" aria-label="Download Script">
-                                <i class="fas fa-download"></i>
-                                <span>Download Script</span>
-                            </a>
-                            <button type="button" class="btn btn-outline-emerald px-6 rounded-pill d-flex align-items-center gap-2 transition-all hover:bg-emerald-100" id="process-another" aria-label="Convert Another">
-                                <i class="fas fa-redo"></i>
-                                <span>Convert Another</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+<!-- Tool Info -->
+<section class="tool-info">
+    <div class="container">
+        <div class="tool-info-grid">
+            <div class="tool-info-card">
+                <h3 class="tool-info-title">
+                    <i class="fas fa-info-circle"></i>
+                    Supported Formats
+                </h3>
+                <ul class="tool-info-list">
+                    <?php foreach ($tool->getSupportedTypes() as $type): ?>
+                        <li><?php echo htmlspecialchars($type); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            
+            <div class="tool-info-card">
+                <h3 class="tool-info-title">
+                    <i class="fas fa-hdd"></i>
+                    File Limits
+                </h3>
+                <p>Maximum file size: <strong><?php echo number_format($tool->getMaxFileSize() / 1024 / 1024, 0); ?> MB</strong></p>
+                <?php if ($tool->supportsChunking()): ?>
+                    <p><i class="fas fa-check text-success"></i> Supports large file uploads</p>
+                <?php endif; ?>
+            </div>
+            
+            <div class="tool-info-card">
+                <h3 class="tool-info-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Privacy & Security
+                </h3>
+                <p>Your files and API keys are processed securely.</p>
+                <ul class="tool-info-list">
+                    <li>Files deleted after processing</li>
+                    <li>API keys encrypted with AES-256</li>
+                    <li>No data retained on servers</li>
+                </ul>
+            </div>
+            
+            <div class="tool-info-card">
+                <h3 class="tool-info-title">
+                    <i class="fas fa-robot"></i>
+                    AI Providers
+                </h3>
+                <ul class="tool-info-list">
+                    <li><strong>OpenAI GPT:</strong> Free tier available</li>
+                    <li><strong>Anthropic Claude:</strong> Requires API key</li>
+                    <li><strong>Google Gemini:</strong> Requires API key</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -360,9 +460,9 @@ const modelsByProvider = {
 
 // Provider info
 const providerInfo = {
-    openai: { badge: '<span class="badge bg-emerald-100 text-emerald-700">Free Tier Available</span>', hasFree: true },
-    claude: { badge: '<span class="badge bg-amber-100 text-amber-700">API Key Required</span>', hasFree: false },
-    gemini: { badge: '<span class="badge bg-amber-100 text-amber-700">API Key Required</span>', hasFree: false }
+    openai: { badge: '<span class="badge badge-free">Free Tier Available</span>', hasFree: true },
+    claude: { badge: '<span class="badge badge-key">API Key Required</span>', hasFree: false },
+    gemini: { badge: '<span class="badge badge-key">API Key Required</span>', hasFree: false }
 };
 
 $(document).ready(function() {
@@ -378,19 +478,19 @@ $(document).ready(function() {
     $('#content_mode').on('change', function() {
         const mode = $(this).val();
         if (mode === 'uncensored') {
-            $('#content-warning').removeClass('d-none');
+            $('#content-warning').slideDown();
         } else {
-            $('#content-warning').addClass('d-none');
+            $('#content-warning').slideUp();
         }
     });
     
     // Custom API key toggle
     $('#use_custom_key').on('change', function() {
         if ($(this).is(':checked')) {
-            $('#custom-key-container').removeClass('d-none');
+            $('#custom-key-container').slideDown();
             checkStoredKey();
         } else {
-            $('#custom-key-container').addClass('d-none');
+            $('#custom-key-container').slideUp();
         }
     });
     
@@ -398,6 +498,7 @@ $(document).ready(function() {
     $('#toggle-key-visibility').on('click', function() {
         const input = $('#custom_api_key');
         const icon = $(this).find('i');
+        
         if (input.attr('type') === 'password') {
             input.attr('type', 'text');
             icon.removeClass('fa-eye').addClass('fa-eye-slash');
@@ -411,110 +512,206 @@ $(document).ready(function() {
     $('#save-key-btn').on('click', function() {
         const provider = $('#ai_provider').val();
         const apiKey = $('#custom_api_key').val().trim();
-        if (!apiKey) { showKeyStatus('Please enter an API key', 'text-red-600'); return; }
         
+        if (!apiKey) {
+            showKeyStatus('Please enter an API key', 'error');
+            return;
+        }
+        
+        // Validate key format
+        if (!validateKeyFormat(apiKey, provider)) {
+            showKeyStatus('Invalid API key format for ' + provider, 'error');
+            return;
+        }
+        
+        // Save via AJAX
         $.ajax({
             url: window.toolConfig.apiKeyUrl,
             method: 'POST',
-            data: { provider: provider, api_key: apiKey, csrf_token: $('input[name="csrf_token"]').val() },
+            data: {
+                provider: provider,
+                api_key: apiKey,
+                csrf_token: $('input[name="csrf_token"]').val()
+            },
             success: function(response) {
                 if (response.success) {
-                    showKeyStatus('API key saved successfully!', 'text-emerald-600');
+                    showKeyStatus('API key saved successfully!', 'success');
                     window.toolConfig.hasStoredKeys[provider] = true;
                     updateStoredKeysUI();
-                    $('#delete-key-btn').removeClass('d-none');
+                    $('#delete-key-btn').show();
                 } else {
-                    showKeyStatus(response.message || 'Failed to save key', 'text-red-600');
+                    showKeyStatus(response.message || 'Failed to save key', 'error');
                 }
             },
-            error: function(xhr) { showKeyStatus(xhr.responseJSON?.message || 'Failed to save key', 'text-red-600'); }
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || 'Failed to save key';
+                showKeyStatus(message, 'error');
+            }
         });
     });
     
     // Delete API key
     $('#delete-key-btn').on('click', function() {
         const provider = $('#ai_provider').val();
-        if (!confirm('Are you sure you want to remove your saved API key for ' + provider + '?')) return;
+        
+        if (!confirm('Are you sure you want to remove your saved API key for ' + provider + '?')) {
+            return;
+        }
+        
         $.ajax({
             url: window.toolConfig.apiKeyUrl,
             method: 'DELETE',
-            data: { provider: provider, csrf_token: $('input[name="csrf_token"]').val() },
+            data: {
+                provider: provider,
+                csrf_token: $('input[name="csrf_token"]').val()
+            },
             success: function(response) {
                 if (response.success) {
-                    showKeyStatus('API key removed successfully!', 'text-emerald-600');
+                    showKeyStatus('API key removed successfully!', 'success');
                     window.toolConfig.hasStoredKeys[provider] = false;
                     updateStoredKeysUI();
-                    $('#delete-key-btn').addClass('d-none');
+                    $('#delete-key-btn').hide();
                     $('#custom_api_key').val('');
                 } else {
-                    showKeyStatus(response.message || 'Failed to remove key', 'text-red-600');
+                    showKeyStatus(response.message || 'Failed to remove key', 'error');
                 }
+            },
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || 'Failed to remove key';
+                showKeyStatus(message, 'error');
             }
         });
     });
     
+    // Update model options based on provider
     function updateModelOptions(provider) {
         const $modelSelect = $('#ai_model');
-        $modelSelect.find('optgroup').hide().filter('[data-provider="' + provider + '"]').show();
+        const currentModel = $modelSelect.val();
+        
+        // Hide all optgroups
+        $modelSelect.find('optgroup').hide();
+        
+        // Show optgroup for selected provider
+        $modelSelect.find('optgroup[data-provider="' + provider + '"]').show();
+        
+        // Select first available model if current not available
         const availableModels = modelsByProvider[provider] || [];
-        if (availableModels.length > 0) $modelSelect.val(availableModels[0]);
+        if (availableModels.indexOf(currentModel) === -1 && availableModels.length > 0) {
+            $modelSelect.val(availableModels[0]);
+        }
     }
     
+    // Update provider badge
     function updateProviderBadge(provider) {
-        $('#provider-badge').html(providerInfo[provider]?.badge || '');
+        const info = providerInfo[provider] || providerInfo.openai;
+        $('#provider-badge').html(info.badge);
     }
     
+    // Update API key UI based on provider
     function updateApiKeyUI(provider) {
         const hasStoredKey = window.toolConfig.hasStoredKeys[provider];
+        
         if (hasStoredKey) {
-            $('#delete-key-btn').removeClass('d-none');
-            showKeyStatus('You have a saved key for ' + provider, 'text-blue-600');
+            $('#delete-key-btn').show();
+            showKeyStatus('You have a saved key for ' + provider, 'info');
         } else {
-            $('#delete-key-btn').addClass('d-none');
+            $('#delete-key-btn').hide();
             $('#key-status').empty();
         }
+        
+        // Update toggle label
+        const info = providerInfo[provider];
+        if (info.hasFree) {
+            $('.toggle-label').text('Use my own API key (optional)');
+        } else {
+            $('.toggle-label').text('Use my own API key (required)');
+        }
     }
     
+    // Check for stored key
     function checkStoredKey() {
         const provider = $('#ai_provider').val();
-        if (window.toolConfig.hasStoredKeys[provider]) {
-            $('#delete-key-btn').removeClass('d-none');
-            showKeyStatus('Using saved key for ' + provider, 'text-blue-600');
+        const hasStoredKey = window.toolConfig.hasStoredKeys[provider];
+        
+        if (hasStoredKey) {
+            $('#delete-key-btn').show();
+            showKeyStatus('Using saved key for ' + provider, 'info');
         }
     }
     
-    function showKeyStatus(message, cls) {
-        $('#key-status').removeClass('text-emerald-600 text-red-600 text-blue-600').addClass(cls).text(message);
+    // Validate key format
+    function validateKeyFormat(key, provider) {
+        switch (provider) {
+            case 'openai':
+                return key.startsWith('sk-') && key.length > 20;
+            case 'claude':
+                return key.startsWith('sk-ant-') && key.length > 20;
+            case 'gemini':
+                return key.length > 20;
+            default:
+                return key.length > 10;
+        }
     }
     
+    // Show key status message
+    function showKeyStatus(message, type) {
+        const $status = $('#key-status');
+        $status.removeClass('success error info').addClass(type).text(message);
+        
+        // Auto-clear after 5 seconds for success messages
+        if (type === 'success') {
+            setTimeout(function() {
+                $status.empty();
+            }, 5000);
+        }
+    }
+    
+    // Update stored keys UI
     function updateStoredKeysUI() {
         const keys = [];
-        Object.keys(window.toolConfig.hasStoredKeys).forEach(p => {
-            if (window.toolConfig.hasStoredKeys[p]) keys.push(p.charAt(0).toUpperCase() + p.slice(1));
-        });
+        if (window.toolConfig.hasStoredKeys.openai) keys.push('OpenAI');
+        if (window.toolConfig.hasStoredKeys.claude) keys.push('Claude');
+        if (window.toolConfig.hasStoredKeys.gemini) keys.push('Gemini');
+        
         const $info = $('#stored-keys-info');
         if (keys.length > 0) {
-            $info.removeClass('d-none').html('<p class="text-xs fw-bold text-gray-700 mb-2">Saved Keys:</p><div class="d-flex flex-wrap gap-2">' +
-                keys.map(k => '<span class="badge bg-indigo-50 text-indigo-600">' + k + '</span>').join('') + '</div>');
+            $info.html(
+                '<p class="stored-keys-label">' +
+                '<i class="fas fa-check-circle text-success"></i> ' +
+                'You have saved API keys for:</p>' +
+                '<ul class="stored-keys-list"><li>' + keys.join('</li><li>') + '</li></ul>'
+            );
         } else {
-            $info.addClass('d-none').empty();
+            $info.empty();
         }
     }
     
-    // Process form
+    // Initialize
+    updateModelOptions($('#ai_provider').val());
+    updateProviderBadge($('#ai_provider').val());
+    
+    // Process form submission with progress tracking
     $('#tool-options-form').on('submit', function(e) {
         e.preventDefault();
-        const uploadId = $('#upload-id').val();
-        if (!uploadId) { alert('Please upload a file first'); return; }
         
-        $('#progress-panel').removeClass('d-none');
-        $('#tool-results').addClass('d-none');
+        const uploadId = $('#upload-id').val();
+        if (!uploadId) {
+            alert('Please upload a file first');
+            return;
+        }
+        
+        // Show progress panel
+        $('#progress-panel').show();
+        $('#tool-results').hide();
         $('#process-btn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Converting...');
+        
+        // Submit form
+        const formData = $(this).serialize();
         
         $.ajax({
             url: window.toolConfig.apiUrl,
             method: 'POST',
-            data: $(this).serialize(),
+            data: formData,
             success: function(response) {
                 if (response.success) {
                     updateProgressSteps('complete');
@@ -522,14 +719,22 @@ $(document).ready(function() {
                 } else {
                     showError(response.message || 'Conversion failed');
                 }
+            },
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || 'Conversion failed';
+                showError(message);
             }
         });
+        
+        // Start progress polling
         pollProgress();
     });
     
+    // Poll for progress updates
     function pollProgress() {
         const jobId = $('#upload-id').val();
         if (!jobId) return;
+        
         const checkProgress = function() {
             $.ajax({
                 url: '<?php echo $base_url; ?>/tool/' + window.toolConfig.id + '/progress/' + jobId,
@@ -537,79 +742,413 @@ $(document).ready(function() {
                 success: function(response) {
                     if (response.success && response.data) {
                         updateProgressDisplay(response.data);
-                        if (response.data.status === 'processing') setTimeout(checkProgress, 1000);
+                        
+                        if (response.data.status === 'processing') {
+                            setTimeout(checkProgress, 1000);
+                        }
                     }
                 }
             });
         };
+        
         checkProgress();
     }
     
+    // Update progress display
     function updateProgressDisplay(data) {
         const progress = data.progress || 0;
         $('#conversion-progress-fill').css('width', progress + '%');
         $('#conversion-progress-text').text(progress + '%');
-        if (data.message) $('#progress-stage').text(data.message);
+        
+        if (data.message) {
+            $('#progress-stage').text(data.message);
+        }
+        
+        // Update step indicators
         updateProgressSteps(data.stage);
     }
     
+    // Update progress step indicators
     function updateProgressSteps(currentStage) {
         const steps = ['extract', 'parse', 'chunk', 'ai', 'format', 'create'];
         const stageIndex = steps.indexOf(currentStage);
-        steps.forEach((step, index) => {
-            const $step = $('.col[data-step="' + step + '"]');
-            const $icon = $step.find('.step-icon');
-            $icon.removeClass('bg-indigo-600 text-white bg-emerald-600 bg-gray-100 text-gray-400');
-            $step.removeClass('text-indigo-600 text-emerald-600');
+        
+        steps.forEach(function(step, index) {
+            const $step = $('.step[data-step="' + step + '"]');
+            $step.removeClass('active completed');
             
-            if (index < stageIndex || currentStage === 'complete') {
-                $icon.addClass('bg-emerald-600 text-white');
-                $step.addClass('text-emerald-600');
+            if (index < stageIndex) {
+                $step.addClass('completed');
             } else if (index === stageIndex) {
-                $icon.addClass('bg-indigo-600 text-white');
-                $step.addClass('text-indigo-600');
-            } else {
-                $icon.addClass('bg-gray-100 text-gray-400');
+                $step.addClass('active');
             }
         });
+        
+        if (currentStage === 'complete') {
+            $('.step').addClass('completed');
+        }
     }
     
+    // Show results
     function showResults(data) {
-        $('#progress-panel').addClass('d-none');
-        $('#tool-results').removeClass('d-none');
+        $('#progress-panel').hide();
+        $('#tool-results').show();
         $('#process-btn').prop('disabled', false).html('<i class="fas fa-magic"></i> Convert to Manga Script');
+        
         $('#result-filename').text(data.output_filename);
-        $('#result-stats').html('<span><i class="fas fa-cut"></i> ' + (data.chunks_processed || 0) + ' chunks</span>' +
-            '<span><i class="fas fa-clock"></i> ' + (data.processing_time || 0) + 's</span>');
+        $('#result-details').text(
+            'File size: ' + formatFileSize(data.file_size) + 
+            ' | Processing time: ' + data.processing_time + 's'
+        );
+        
+        if (data.chunks_processed) {
+            $('#result-stats').html('<span><i class="fas fa-cut"></i> ' + 
+                data.chunks_processed + ' text chunks processed</span>');
+        }
+        
         $('#download-btn').attr('href', data.download_url);
     }
     
+    // Show error
     function showError(message) {
-        $('#progress-panel').addClass('d-none');
+        $('#progress-panel').hide();
         $('#process-btn').prop('disabled', false).html('<i class="fas fa-magic"></i> Convert to Manga Script');
         alert('Error: ' + message);
     }
-
-    // Initialize UI
-    updateModelOptions($('#ai_provider').val());
-    updateProviderBadge($('#ai_provider').val());
-    updateStoredKeysUI();
-
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Process another button
     $('#process-another').on('click', function() {
-        location.reload();
+        $('#tool-results').hide();
+        $('#upload-zone').show();
+        $('#file-info').hide();
+        $('#upload-id').val('');
+        $('#file-input').val('');
+        $('#progress-fill').css('width', '0%');
+        $('#progress-text').text('0%');
+        $('.step').removeClass('active completed');
     });
 });
 </script>
 
 <style>
-/* Additional specific styles */
-.bg-gradient-to-br { background: linear-gradient(135deg, var(--tw-gradient-from), var(--tw-gradient-to)); }
-.from-indigo-600 { --tw-gradient-from: #4f46e5; }
-.to-purple-600 { --tw-gradient-to: #9333ea; }
-.rounded-3xl { border-radius: 1.5rem; }
-.rounded-2xl { border-radius: 1rem; }
-.rounded-xl { border-radius: 0.75rem; }
-.space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
-.space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
-.space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem; }
+/* Novel to Manga specific styles */
+.ai-info-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+}
+
+.ai-info-card h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+}
+
+.ai-info-card p {
+    margin: 0 0 1rem 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+.ai-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ai-features li {
+    padding: 0.35rem 0;
+    font-size: 0.85rem;
+}
+
+.ai-features li i {
+    margin-right: 0.5rem;
+    color: #90EE90;
+}
+
+.provider-badge {
+    margin-top: 0.5rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-free {
+    background: #10b981;
+    color: white;
+}
+
+.badge-key {
+    background: #f59e0b;
+    color: white;
+}
+
+.content-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #92400e;
+    font-size: 0.85rem;
+}
+
+.api-key-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.custom-key-input {
+    margin-top: 1rem;
+}
+
+.input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-group .form-input {
+    flex: 1;
+}
+
+.btn-icon {
+    padding: 0.5rem 0.75rem;
+    background: #e2e8f0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-icon:hover {
+    background: #cbd5e1;
+}
+
+.api-key-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.key-status {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    min-height: 1.5rem;
+}
+
+.key-status.success {
+    color: #10b981;
+}
+
+.key-status.error {
+    color: #ef4444;
+}
+
+.key-status.info {
+    color: #3b82f6;
+}
+
+.stored-keys-info {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.stored-keys-label {
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.stored-keys-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.stored-keys-list li {
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.toggle-options .toggle-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.processing-info {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
+}
+
+.info-item i {
+    margin-top: 0.1rem;
+}
+
+/* Progress Panel Styles */
+.tool-progress-panel {
+    margin-top: 2rem;
+}
+
+.progress-bar-large {
+    height: 24px;
+    border-radius: 12px;
+}
+
+.progress-bar-large .progress-bar-fill {
+    border-radius: 12px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.progress-display {
+    text-align: center;
+    padding: 2rem;
+}
+
+.progress-percentage {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #667eea;
+    margin: 1rem 0 0.5rem;
+}
+
+.progress-stage {
+    color: #6b7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.step i {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    color: #667eea;
+}
+
+.step.active i {
+    background: #667eea;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+.step.completed {
+    color: #10b981;
+}
+
+.step.completed i {
+    background: #10b981;
+    color: white;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+    }
+}
+
+/* Result stats */
+.result-stats {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.result-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .progress-steps {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .step {
+        flex: 0 0 calc(33.333% - 1rem);
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .api-key-actions {
+        flex-direction: column;
+    }
+}
 </style>
