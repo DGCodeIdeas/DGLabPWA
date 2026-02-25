@@ -35,9 +35,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>/assets/vendor/fontawesome/css/all.min.css">
     
-    <!-- Application CSS -->
+    <!-- Application CSS (Tailwind + Bootstrap) -->
     <link rel="stylesheet" href="<?php echo $base_url; ?>/assets/css/app.css?v=<?php echo APP_VERSION; ?>">
     
     <!-- Page-specific CSS -->
@@ -72,7 +72,10 @@
     </div>
     
     <!-- jQuery -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="<?php echo $base_url; ?>/assets/js/vendor/jquery.min.js"></script>
+
+    <!-- Bootstrap Bundle -->
+    <script src="<?php echo $base_url; ?>/assets/js/vendor/bootstrap.bundle.min.js"></script>
     
     <!-- Application JavaScript -->
     <script src="<?php echo $base_url; ?>/assets/js/app.js?v=<?php echo APP_VERSION; ?>"></script>
