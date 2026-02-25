@@ -6,104 +6,55 @@
  */
 ?>
 <!-- Page Header -->
-<section class="page-header">
+<section class="bg-gradient-to-r from-indigo-600 to-purple-700 py-16 lg:py-24 text-white text-center">
     <div class="container">
-        <h1 class="page-title">All Tools</h1>
-        <p class="page-description">
+        <h1 class="display-4 fw-bold mb-3">All Tools</h1>
+        <p class="fs-5 opacity-90 max-w-xl mx-auto leading-relaxed">
             Browse our collection of web-based tools for file processing and conversion.
         </p>
     </div>
 </section>
 
 <!-- Tools by Category -->
-<section class="tools-listing">
+<section class="py-16 bg-gray-50">
     <div class="container">
         <?php foreach ($categories as $category => $catTools): ?>
-            <div class="category-section">
-                <h2 class="category-title"><?php echo htmlspecialchars($category); ?></h2>
+            <div class="mb-16 last:mb-0">
+                <div class="d-flex align-items-center gap-3 mb-8">
+                    <h2 class="h4 fw-bold text-gray-900 mb-0"><?php echo htmlspecialchars($category); ?></h2>
+                    <div class="flex-grow-1 bg-gray-200 h-0.5 rounded-full"></div>
+                </div>
                 
-                <div class="tools-grid">
+                <div class="row g-6">
                     <?php foreach ($catTools as $id => $tool): ?>
-                        <a href="<?php echo $base_url; ?>/tool/<?php echo $id; ?>" class="tool-card">
-                            <div class="tool-card-icon">
-                                <i class="fas <?php echo $tool->getIcon(); ?>"></i>
-                            </div>
-                            <h3 class="tool-card-title"><?php echo htmlspecialchars($tool->getName()); ?></h3>
-                            <p class="tool-card-description">
-                                <?php echo htmlspecialchars($tool->getDescription()); ?>
-                            </p>
-                            <div class="tool-card-meta">
-                                <span class="tool-card-type">
-                                    <?php echo implode(', ', array_slice($tool->getSupportedTypes(), 0, 2)); ?>
-                                </span>
-                                <?php if ($tool->supportsChunking()): ?>
-                                    <span class="tool-card-badge" title="Supports large files">
-                                        <i class="fas fa-bolt"></i>
-                                    </span>
-                                <?php endif; ?>
-                            </div>
-                        </a>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="<?php echo $base_url; ?>/tool/<?php echo $id; ?>" class="d-block text-decoration-none h-100">
+                                <div class="bg-white p-6 rounded-3xl border shadow-sm transition-all hover:shadow-md hover:-translate-y-1 h-100 d-flex flex-column">
+                                    <div class="bg-indigo-600 text-white rounded-2xl p-3 d-inline-flex mb-4 align-self-start">
+                                        <i class="fas <?php echo $tool->getIcon(); ?> fs-4"></i>
+                                    </div>
+                                    <h3 class="h5 fw-bold text-gray-900 mb-3"><?php echo htmlspecialchars($tool->getName()); ?></h3>
+                                    <p class="text-gray-600 mb-6 fs-6 leading-relaxed">
+                                        <?php echo htmlspecialchars($tool->getDescription()); ?>
+                                    </p>
+
+                                    <div class="mt-auto pt-4 border-top d-flex align-items-center justify-content-between">
+                                        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                            <?php echo implode(', ', array_slice($tool->getSupportedTypes(), 0, 2)); ?>
+                                        </span>
+                                        <?php if ($tool->supportsChunking()): ?>
+                                            <span class="text-amber-500 d-flex align-items-center gap-1" title="Supports large files">
+                                                <i class="fas fa-bolt"></i>
+                                                <span class="text-xs fw-bold">PRO</span>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
 </section>
-
-<style>
-.page-header {
-    padding: 4rem 0;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: #fff;
-    text-align: center;
-}
-
-.page-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 1rem;
-}
-
-.page-description {
-    font-size: 1.125rem;
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.tools-listing {
-    padding: 4rem 0;
-}
-
-.category-section {
-    margin-bottom: 4rem;
-}
-
-.category-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--color-gray-800);
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--color-gray-200);
-}
-
-.tool-card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: auto;
-    padding-top: 1rem;
-}
-
-.tool-card-type {
-    font-size: 0.75rem;
-    color: var(--color-gray-500);
-}
-
-.tool-card-badge {
-    color: var(--color-warning);
-    font-size: 0.875rem;
-}
-</style>

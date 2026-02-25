@@ -467,26 +467,6 @@
     };
 
     // =========================================================================
-    // Mobile Navigation
-    // =========================================================================
-
-    DGLab.MobileNav = {
-        /**
-         * Initialize mobile navigation
-         */
-        init: function() {
-            const $toggle = $('.menu-toggle');
-            const $nav = $('.nav');
-            
-            $toggle.on('click', () => {
-                const isExpanded = $toggle.attr('aria-expanded') === 'true';
-                $toggle.attr('aria-expanded', !isExpanded);
-                $nav.toggleClass('is-open');
-            });
-        }
-    };
-
-    // =========================================================================
     // Document Ready
     // =========================================================================
 
@@ -495,7 +475,6 @@
         DGLab.FileUpload.init();
         DGLab.ToolProcessor.init();
         DGLab.ConditionalFields.init();
-        DGLab.MobileNav.init();
         
         // Add CSRF token to all AJAX requests
         $.ajaxSetup({
