@@ -22,14 +22,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
 // =============================================================================
-// SESSION INITIALIZATION
-// =============================================================================
-// Start session for user state management and CSRF protection
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// =============================================================================
 // CONSTANTS DEFINITION
 // =============================================================================
 // Define essential path constants for the application
@@ -72,6 +64,32 @@ define('APP_VERSION', '1.0.0');
 
 /** @var string APP_NAME Application name */
 define('APP_NAME', 'DGLab PWA');
+
+// =============================================================================
+// SESSION INITIALIZATION
+// =============================================================================
+// Start session for user state management and CSRF protection
+
+// Pre-load config to get session settings if available
+$tempConfigPath = CONFIG_PATH . '/config.php';
+if (file_exists($tempConfigPath)) {
+    $tempConfig = require $tempConfigPath;
+    if (isset($tempConfig['session'])) {
+        $s = $tempConfig['session'];
+        session_set_cookie_params([
+            'lifetime' => $s['cookie_lifetime'] ?? 0,
+            'path'     => $s['cookie_path'] ?? '/',
+            'domain'   => $s['cookie_domain'] ?? '',
+            'secure'   => $s['cookie_secure'] ?? false,
+            'httponly' => $s['cookie_httponly'] ?? true,
+            'samesite' => $s['cookie_samesite'] ?? 'Lax',
+        ]);
+    }
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // =============================================================================
 // AUTOLOADER CONFIGURATION

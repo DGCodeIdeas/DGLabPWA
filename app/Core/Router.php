@@ -483,8 +483,13 @@ class Router
             $uri = substr($uri, strlen($this->basePath));
         }
         
-        // Ensure leading slash
-        return '/' . ltrim($uri, '/');
+        // Ensure leading slash and remove trailing slash for consistent matching
+        $uri = '/' . ltrim($uri, '/');
+        if ($uri !== '/') {
+            $uri = rtrim($uri, '/');
+        }
+
+        return $uri;
     }
 
     /**

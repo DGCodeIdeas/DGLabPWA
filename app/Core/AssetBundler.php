@@ -211,16 +211,27 @@ class AssetBundler
                 continue;
             }
             
+            // Handle single-line rules like "h1 { color: red; }"
+            if (strpos($trimmed, '{') !== false && strpos($trimmed, '}') !== false) {
+                $selector = trim(substr($trimmed, 0, strpos($trimmed, '{')));
+                if ($indentLevel > 0 && !empty($selectors)) {
+                    $parent = end($selectors);
+                    $selector = (strpos($selector, '&') === 0) ? str_replace('&', $parent, $selector) : $parent . ' ' . $selector;
+                }
+                $result[] = $selector . ' ' . substr($trimmed, strpos($trimmed, '{'));
+                continue;
+            }
+
             // Check for opening brace
             if (strpos($trimmed, '{') !== false) {
                 $selector = trim(substr($trimmed, 0, strpos($trimmed, '{')));
                 
                 if ($indentLevel > 0 && !empty($selectors)) {
                     // Nested selector
-                    $parent = implode(' ', $selectors);
+                    $parent = end($selectors);
                     if (strpos($selector, '&') === 0) {
                         // Parent reference
-                        $selector = str_replace('&', end($selectors), $selector);
+                        $selector = str_replace('&', $parent, $selector);
                     } else {
                         $selector = $parent . ' ' . $selector;
                     }
@@ -334,8 +345,14 @@ class AssetBundler
     {
         // Remove comments, compress whitespace, and remove spaces around punctuation
         return trim(preg_replace(
-            ['/\/\*.*?\*\//s', '/\s+/', '/\s*([{}:;,])\s*/', '/;}/'],
-            ['', ' ', '$1', '}'],
+            [
+                '/\/\*.*?\*\//s',            // Multi-line comments
+                '/(?<!:)\/\/.*$/m',          // Single-line comments (SCSS style)
+                '/\s+/',                     // Whitespace
+                '/\s*([{}:;,])\s*/',         // Punctuation
+                '/;}/'                       // Trailing semicolons
+            ],
+            ['', '', ' ', '$1', '}'],
             $css
         ));
     }
@@ -521,9 +538,9 @@ class AssetBundler
         global $config;
         
         $baseUrl = $config['app']['base_url'] ?? '';
-        $relativeCachePath = str_replace($this->publicPath, '', $this->cachePath);
         
-        return rtrim($baseUrl, '/') . $relativeCachePath . '/' . $filename;
+        // Route cached assets through the AssetController to avoid path issues
+        return rtrim($baseUrl, '/') . '/assets/cache/' . $filename;
     }
 
     /**
