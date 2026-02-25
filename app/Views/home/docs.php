@@ -6,167 +6,165 @@
  */
 ?>
 <!-- Page Header -->
-<section class="page-header">
-    <div class="container">
-        <h1 class="page-title">Documentation</h1>
-        <p class="page-description">
-            Learn how to use our platform and integrate with our API.
-        </p>
+<section class="tw-pt-48 tw-pb-32 tw-bg-slate-900 tw-text-white tw-relative tw-overflow-hidden">
+    <div class="tw-bg-blur-blob" style="top: -20%; right: -10%; background: radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%);"></div>
+    <div class="container tw-relative tw-z-10">
+        <div class="lg:tw-broken-grid">
+            <div class="tw-col-span-12 lg:tw-col-span-8">
+                <h1 class="tw-text-7xl tw-font-bold tw-mb-6">Knowledge <span class="tw-text-gradient">Base</span></h1>
+                <p class="tw-text-2xl tw-opacity-80 tw-max-w-2xl">
+                    Master the tools of the digital trade with our comprehensive documentation and API reference.
+                </p>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- Documentation Content -->
-<section class="docs-content">
+<section class="tw-py-32 tw-bg-white">
     <div class="container">
-        <div class="docs-grid">
+        <div class="lg:tw-broken-grid tw-gap-24">
             <!-- Sidebar Navigation -->
-            <aside class="docs-sidebar">
-                <nav class="docs-nav">
-                    <h3>Getting Started</h3>
-                    <ul>
-                        <li><a href="#introduction">Introduction</a></li>
-                        <li><a href="#quickstart">Quick Start</a></li>
-                        <li><a href="#installation">Installation</a></li>
-                    </ul>
+            <aside class="tw-col-span-12 lg:tw-col-span-3">
+                <nav class="tw-sticky tw-top-32 tw-space-y-12">
+                    <div>
+                        <h3 class="tw-text-xs tw-font-bold tw-text-slate-400 tw-uppercase tw-tracking-widest tw-mb-6">Getting Started</h3>
+                        <ul class="tw-space-y-3">
+                            <li><a href="#introduction" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Introduction</a></li>
+                            <li><a href="#quickstart" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Quick Start</a></li>
+                            <li><a href="#installation" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Installation</a></li>
+                        </ul>
+                    </div>
                     
-                    <h3>Using Tools</h3>
-                    <ul>
-                        <li><a href="#uploading">Uploading Files</a></li>
-                        <li><a href="#processing">Processing Files</a></li>
-                        <li><a href="#downloading">Downloading Results</a></li>
-                    </ul>
+                    <div>
+                        <h3 class="tw-text-xs tw-font-bold tw-text-slate-400 tw-uppercase tw-tracking-widest tw-mb-6">API Reference</h3>
+                        <ul class="tw-space-y-3">
+                            <li><a href="#api-overview" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">API Overview</a></li>
+                            <li><a href="#endpoints" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Endpoints</a></li>
+                        </ul>
+                    </div>
                     
-                    <h3>API Reference</h3>
-                    <ul>
-                        <li><a href="#api-overview">API Overview</a></li>
-                        <li><a href="#authentication">Authentication</a></li>
-                        <li><a href="#endpoints">Endpoints</a></li>
-                    </ul>
-                    
-                    <h3>Development</h3>
-                    <ul>
-                        <li><a href="#architecture">Architecture</a></li>
-                        <li><a href="#creating-tools">Creating Tools</a></li>
-                        <li><a href="#contributing">Contributing</a></li>
-                    </ul>
+                    <div>
+                        <h3 class="tw-text-xs tw-font-bold tw-text-slate-400 tw-uppercase tw-tracking-widest tw-mb-6">Development</h3>
+                        <ul class="tw-space-y-3">
+                            <li><a href="#creating-tools" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Creating Tools</a></li>
+                        </ul>
+                    </div>
                 </nav>
             </aside>
             
             <!-- Main Content -->
-            <main class="docs-main">
-                <article id="introduction">
-                    <h2>Introduction</h2>
-                    <p>
+            <main class="tw-col-span-12 lg:tw-col-span-9">
+                <article id="introduction" class="tw-mb-32">
+                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Introduction</h2>
+                    <p class="tw-text-xl tw-text-slate-600 tw-leading-relaxed">
                         <?php echo APP_NAME; ?> is a web-based platform for file processing and conversion. 
                         It provides a collection of tools that work directly in your browser, 
                         with no software installation required.
                     </p>
-                    <p>
+                    <p class="tw-text-xl tw-text-slate-600 tw-leading-relaxed tw-mt-6">
                         Our platform is built as a Progressive Web App (PWA), which means you can 
                         install it on your device and use it offline. It works on desktop computers, 
                         tablets, and mobile devices.
                     </p>
                 </article>
                 
-                <article id="quickstart">
-                    <h2>Quick Start</h2>
-                    <ol class="steps">
-                        <li>
-                            <strong>Choose a Tool</strong>
-                            <p>Browse our <a href="/tools">tools collection</a> and select the one you need.</p>
-                        </li>
-                        <li>
-                            <strong>Upload Your File</strong>
-                            <p>Click the upload area or drag and drop your file. We support files up to 100MB.</p>
-                        </li>
-                        <li>
-                            <strong>Configure Options</strong>
-                            <p>Select your desired settings and options for the processing.</p>
-                        </li>
-                        <li>
-                            <strong>Process & Download</strong>
-                            <p>Click "Process File" and download your result when complete.</p>
-                        </li>
-                    </ol>
-                </article>
-                
-                <article id="installation">
-                    <h2>Installation</h2>
-                    <p>
-                        To install <?php echo APP_NAME; ?> as a Progressive Web App:
-                    </p>
-                    <div class="install-methods">
-                        <div class="install-method">
-                            <h4><i class="fab fa-chrome"></i> Chrome / Edge</h4>
-                            <p>Click the install icon (➕) in the address bar, then click "Install".</p>
+                <article id="quickstart" class="tw-mb-32">
+                    <h2 class="tw-text-5xl tw-font-bold tw-mb-12">Quick Start</h2>
+                    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-8">
+                        <div class="tw-p-10 tw-bg-slate-50 tw-rounded-[2.5rem]">
+                            <span class="tw-inline-flex tw-w-10 tw-h-10 tw-bg-indigo-600 tw-text-white tw-rounded-full tw-items-center tw-justify-center tw-font-bold tw-mb-6">1</span>
+                            <h3 class="tw-text-xl tw-font-bold tw-mb-4">Choose a Tool</h3>
+                            <p class="tw-text-slate-500">Browse our <a href="/tools" class="tw-text-indigo-600">tools collection</a> and select the one you need.</p>
                         </div>
-                        <div class="install-method">
-                            <h4><i class="fab fa-safari"></i> Safari (iOS)</h4>
-                            <p>Tap Share → "Add to Home Screen" → "Add".</p>
-                        </div>
-                        <div class="install-method">
-                            <h4><i class="fab fa-firefox"></i> Firefox</h4>
-                            <p>Click the menu (☰) → "Install".</p>
+                        <div class="tw-p-10 tw-bg-slate-50 tw-rounded-[2.5rem]">
+                            <span class="tw-inline-flex tw-w-10 tw-h-10 tw-bg-indigo-600 tw-text-white tw-rounded-full tw-items-center tw-justify-center tw-font-bold tw-mb-6">2</span>
+                            <h3 class="tw-text-xl tw-font-bold tw-mb-4">Upload File</h3>
+                            <p class="tw-text-slate-500">Click the upload area or drag and drop your file. We support files up to 100MB.</p>
                         </div>
                     </div>
                 </article>
                 
-                <article id="api-overview">
-                    <h2>API Overview</h2>
-                    <p>
-                        Our REST API allows you to integrate our tools into your own applications. 
-                        All API endpoints return JSON responses.
+                <article id="installation" class="tw-mb-32">
+                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Installation</h2>
+                    <p class="tw-text-xl tw-text-slate-600 tw-mb-12">
+                        To install <?php echo APP_NAME; ?> as a Progressive Web App:
                     </p>
-                    
-                    <h3>Base URL</h3>
-                    <code class="code-block"><?php echo $base_url; ?>/api/v1</code>
-                    
-                    <h3>Response Format</h3>
-                    <pre class="code-block"><code>{
+                    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-6">
+                        <div class="tw-p-8 tw-bg-slate-900 tw-text-white tw-rounded-3xl">
+                            <i class="fab fa-chrome tw-text-2xl tw-mb-6"></i>
+                            <h4 class="tw-font-bold tw-mb-2">Chrome / Edge</h4>
+                            <p class="tw-text-slate-400 tw-text-sm">Click the install icon (➕) in the address bar.</p>
+                        </div>
+                        <div class="tw-p-8 tw-bg-slate-900 tw-text-white tw-rounded-3xl">
+                            <i class="fab fa-safari tw-text-2xl tw-mb-6"></i>
+                            <h4 class="tw-font-bold tw-mb-2">Safari (iOS)</h4>
+                            <p class="tw-text-slate-400 tw-text-sm">Tap Share → "Add to Home Screen".</p>
+                        </div>
+                    </div>
+                </article>
+                
+                <article id="api-overview" class="tw-mb-32">
+                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">API Overview</h2>
+                    <div class="tw-p-12 tw-bg-slate-50 tw-rounded-[3rem]">
+                        <p class="tw-text-lg tw-text-slate-600 tw-mb-8">
+                            Our REST API allows you to integrate our tools into your own applications.
+                            All API endpoints return JSON responses.
+                        </p>
+
+                        <h3 class="tw-text-xl tw-font-bold tw-mb-4">Base URL</h3>
+                        <code class="tw-block tw-p-6 tw-bg-slate-900 tw-text-indigo-400 tw-rounded-2xl tw-font-mono tw-text-sm tw-mb-8">
+                            <?php echo $base_url; ?>/api/v1
+                        </code>
+
+                        <h3 class="tw-text-xl tw-font-bold tw-mb-4">Response Format</h3>
+                        <pre class="tw-block tw-p-8 tw-bg-slate-900 tw-text-slate-300 tw-rounded-2xl tw-font-mono tw-text-sm"><code>{
   "success": true,
   "data": { ... },
   "message": "Optional message"
 }</code></pre>
-                </article>
-                
-                <article id="endpoints">
-                    <h2>API Endpoints</h2>
-                    
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span> /status</h4>
-                        <p>Get platform status and information.</p>
-                    </div>
-                    
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span> /tools</h4>
-                        <p>List all available tools.</p>
-                    </div>
-                    
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span> /tools/{id}</h4>
-                        <p>Get detailed information about a specific tool.</p>
-                    </div>
-                    
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span> /process/{toolId}</h4>
-                        <p>Process a file with the specified tool.</p>
-                        <p><strong>Parameters:</strong></p>
-                        <ul>
-                            <li><code>file</code> - The file to process (required)</li>
-                            <li>Tool-specific options</li>
-                        </ul>
                     </div>
                 </article>
-                
-                <article id="creating-tools">
-                    <h2>Creating Custom Tools</h2>
-                    <p>
+
+                <article id="endpoints" class="tw-mb-32">
+                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Endpoints</h2>
+                    <div class="tw-space-y-6">
+                        <div class="tw-p-8 tw-bg-slate-50 tw-rounded-[2.5rem]">
+                            <div class="tw-flex tw-items-center tw-gap-4 tw-mb-4">
+                                <span class="tw-px-3 tw-py-1 tw-bg-green-500 tw-text-white tw-text-xs tw-font-bold tw-rounded tw-uppercase">GET</span>
+                                <h4 class="tw-text-xl tw-font-bold">/status</h4>
+                            </div>
+                            <p class="tw-text-slate-500">Get platform status and information.</p>
+                        </div>
+
+                        <div class="tw-p-8 tw-bg-slate-50 tw-rounded-[2.5rem]">
+                            <div class="tw-flex tw-items-center tw-gap-4 tw-mb-4">
+                                <span class="tw-px-3 tw-py-1 tw-bg-green-500 tw-text-white tw-text-xs tw-font-bold tw-rounded tw-uppercase">GET</span>
+                                <h4 class="tw-text-xl tw-font-bold">/tools</h4>
+                            </div>
+                            <p class="tw-text-slate-500">List all available tools.</p>
+                        </div>
+
+                        <div class="tw-p-8 tw-bg-slate-50 tw-rounded-[2.5rem]">
+                            <div class="tw-flex tw-items-center tw-gap-4 tw-mb-4">
+                                <span class="tw-px-3 tw-py-1 tw-bg-indigo-600 tw-text-white tw-text-xs tw-font-bold tw-rounded tw-uppercase">POST</span>
+                                <h4 class="tw-text-xl tw-font-bold">/process/{toolId}</h4>
+                            </div>
+                            <p class="tw-text-slate-500">Process a file with the specified tool.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article id="creating-tools" class="tw-mb-32">
+                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Creating Tools</h2>
+                    <p class="tw-text-xl tw-text-slate-600 tw-mb-10">
                         You can extend <?php echo APP_NAME; ?> by creating custom tools. Tools must implement 
                         the <code>ToolInterface</code> and follow our conventions.
                     </p>
                     
-                    <h3>Basic Tool Structure</h3>
-                    <pre class="code-block"><code>namespace DGLab\Tools\MyTool;
+                    <div class="tw-p-10 tw-bg-slate-900 tw-rounded-[3rem]">
+                        <h3 class="tw-text-xl tw-font-bold tw-text-white tw-mb-6">Basic Tool Structure</h3>
+                        <pre class="tw-text-slate-300 tw-font-mono tw-text-sm tw-overflow-x-auto"><code>namespace DGLab\Tools\MyTool;
 
 use DGLab\Tools\Interfaces\ToolInterface;
 
@@ -185,218 +183,10 @@ class MyTool implements ToolInterface
             'output_path' => $outputPath
         ];
     }
-    
-    // ... other required methods
 }</code></pre>
-                    
-                    <p>
-                        See the <a href="/docs/development">Development Guide</a> for complete documentation 
-                        on creating custom tools.
-                    </p>
+                    </div>
                 </article>
             </main>
         </div>
     </div>
 </section>
-
-<style>
-.docs-content {
-    padding: 4rem 0;
-}
-
-.docs-grid {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 4rem;
-}
-
-.docs-sidebar {
-    position: sticky;
-    top: 6rem;
-    height: fit-content;
-}
-
-.docs-nav h3 {
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-gray-500);
-    margin: 1.5rem 0 0.75rem;
-}
-
-.docs-nav h3:first-child {
-    margin-top: 0;
-}
-
-.docs-nav ul {
-    list-style: none;
-}
-
-.docs-nav li {
-    margin-bottom: 0.25rem;
-}
-
-.docs-nav a {
-    display: block;
-    padding: 0.5rem 0.75rem;
-    color: var(--color-gray-600);
-    border-radius: 0.375rem;
-    transition: all 0.2s;
-}
-
-.docs-nav a:hover {
-    background: var(--color-gray-100);
-    color: var(--color-primary);
-}
-
-.docs-main article {
-    margin-bottom: 4rem;
-}
-
-.docs-main h2 {
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--color-gray-900);
-}
-
-.docs-main h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 2rem 0 1rem;
-    color: var(--color-gray-800);
-}
-
-.docs-main h4 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin: 1.5rem 0 0.75rem;
-}
-
-.docs-main p {
-    color: var(--color-gray-600);
-    line-height: 1.75;
-    margin-bottom: 1rem;
-}
-
-.steps {
-    list-style: none;
-    counter-reset: step;
-}
-
-.steps li {
-    position: relative;
-    padding-left: 3rem;
-    margin-bottom: 1.5rem;
-}
-
-.steps li::before {
-    counter-increment: step;
-    content: counter(step);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 2rem;
-    height: 2rem;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-}
-
-.steps strong {
-    display: block;
-    font-size: 1.125rem;
-    color: var(--color-gray-900);
-    margin-bottom: 0.25rem;
-}
-
-.steps p {
-    margin-bottom: 0;
-}
-
-.install-methods {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-.install-method {
-    padding: 1.5rem;
-    background: var(--color-gray-50);
-    border-radius: 0.75rem;
-}
-
-.install-method h4 {
-    margin: 0 0 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.install-method p {
-    margin: 0;
-    font-size: 0.875rem;
-}
-
-.code-block {
-    display: block;
-    background: var(--color-gray-900);
-    color: var(--color-gray-100);
-    padding: 1.25rem;
-    border-radius: 0.75rem;
-    font-family: var(--font-family-mono);
-    font-size: 0.875rem;
-    overflow-x: auto;
-    margin: 1rem 0;
-}
-
-.endpoint {
-    padding: 1.5rem;
-    background: var(--color-gray-50);
-    border-radius: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.endpoint h4 {
-    margin: 0 0 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.method {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.method.get {
-    background: var(--color-success);
-    color: white;
-}
-
-.method.post {
-    background: var(--color-primary);
-    color: white;
-}
-
-@media (max-width: 768px) {
-    .docs-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .docs-sidebar {
-        position: static;
-        order: 2;
-    }
-}
-</style>
