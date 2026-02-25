@@ -1,5 +1,29 @@
+# Node
 node_modules/
-screenshots/
 pnpm-lock.yaml
-package.json
+
+# Testing & Artifacts
+screenshots/
 test_sample.epub
+*.log
+
+# Application Storage
+storage/cache/*
+storage/chunks/*
+storage/temp/*
+storage/exports/*
+storage/.key
+!storage/cache/.gitkeep
+!storage/chunks/.gitkeep
+!storage/temp/.gitkeep
+!storage/exports/.gitkeep
+
+# Configuration
+config/config.php
+!config/config.example.php
+
+# Environment
+.env
+.vscode/
+.idea/
+.DS_Store

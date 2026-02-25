@@ -297,9 +297,25 @@ class EpubFontChanger implements ToolInterface
                         number_format($this->getMaxFileSize() / 1024 / 1024, 2) . ' MB';
         }
         
-        // Check file extension
+        // Check file extension and MIME type
         $extension = strtolower(pathinfo($inputPath, PATHINFO_EXTENSION));
-        if ($extension !== 'epub') {
+        $mimeType = '';
+
+        if (function_exists('mime_content_type')) {
+            $mimeType = mime_content_type($inputPath);
+        }
+
+        $isValidType = ($extension === 'epub');
+
+        // If extension check fails, check MIME type (useful for PHP temp files)
+        if (!$isValidType && $mimeType) {
+            $epubMimes = ['application/epub+zip', 'application/epub'];
+            if (in_array($mimeType, $epubMimes)) {
+                $isValidType = true;
+            }
+        }
+
+        if (!$isValidType) {
             $errors[] = 'Invalid file type. Only EPUB files are supported.';
         }
         

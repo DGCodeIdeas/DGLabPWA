@@ -29,8 +29,16 @@ class AssetController extends Controller
      */
     public function css(string $file): void
     {
-        // Bundled CSS files are often in the root of cache/assets
         $cachePath = CACHE_PATH . '/assets/' . $file;
+
+        // If missing, try to compile from SCSS
+        if (!file_exists($cachePath)) {
+            $sourceFile = str_replace('.css', '.scss', $file);
+            if (file_exists(ASSETS_PATH . '/scss/' . $sourceFile)) {
+                AssetBundler::css($sourceFile, $file);
+            }
+        }
+
         if (file_exists($cachePath)) {
             $this->serveFile($cachePath);
             return;
@@ -47,14 +55,37 @@ class AssetController extends Controller
      */
     public function js(string $file): void
     {
-        // Bundled JS files are often in the root of cache/assets
         $cachePath = CACHE_PATH . '/assets/' . $file;
+
+        // If missing, try to bundle from source
+        if (!file_exists($cachePath)) {
+            if (file_exists(ASSETS_PATH . '/js/' . $file)) {
+                AssetBundler::js($file, $file);
+            }
+        }
+
         if (file_exists($cachePath)) {
             $this->serveFile($cachePath);
             return;
         }
         
         $this->serve('js/' . $file);
+    }
+
+    /**
+     * Serve cached asset file
+     *
+     * @param string $file Filename
+     * @return void
+     */
+    public function serveCache(string $file): void
+    {
+        $cachePath = CACHE_PATH . '/assets/' . $file;
+        if (file_exists($cachePath)) {
+            $this->serveFile($cachePath);
+            return;
+        }
+        $this->handleNotFound($file);
     }
 
     /**

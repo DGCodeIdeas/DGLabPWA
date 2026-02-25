@@ -399,9 +399,17 @@ abstract class Controller
      */
     protected function validateCsrfToken(?string $token = null): bool
     {
-        $token = $token ?? $this->input('csrf_token');
+        if ($token === null) {
+            $token = $this->input('csrf_token');
+
+            // Also check for X-CSRF-TOKEN header
+            if ($token === null && isset($_SERVER['HTTP_X_CSRF_TOKEN'])) {
+                $token = $_SERVER['HTTP_X_CSRF_TOKEN'];
+            }
+        }
         
         return isset($_SESSION['csrf_token']) && 
+               $token !== null &&
                hash_equals($_SESSION['csrf_token'], $token);
     }
 

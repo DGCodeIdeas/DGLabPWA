@@ -97,8 +97,9 @@ $router->group(['prefix' => 'api/v1'], function (Router $router) {
 // =============================================================================
 
 // Specific routes for bundled assets (higher priority)
-$router->get('/assets/css/{file}', 'AssetController@css', 'assets.css');
-$router->get('/assets/js/{file}', 'AssetController@js', 'assets.js');
+$router->get('/assets/css/{file:any}', 'AssetController@css', 'assets.css');
+$router->get('/assets/js/{file:any}', 'AssetController@js', 'assets.js');
+$router->get('/assets/cache/{file:any}', 'AssetController@serveCache', 'assets.cache');
 
 // Generic route for any other asset
 $router->get('/assets/{path:any}', 'AssetController@serve', 'assets.serve');
