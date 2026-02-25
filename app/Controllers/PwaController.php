@@ -30,16 +30,22 @@ class PwaController extends Controller
         $pwaConfig = $this->config['pwa'] ?? [];
         
         $manifest = [
+            'id'               => $pwaConfig['id'] ?? 'com.dgcodeideas.dglab.pwa',
             'name'             => $pwaConfig['name'] ?? APP_NAME,
             'short_name'       => $pwaConfig['short_name'] ?? 'DGLab',
             'description'      => $pwaConfig['description'] ?? 'Digital Lab - Web Tools Platform',
+            'lang'             => $pwaConfig['lang'] ?? 'en-US',
+            'dir'              => $pwaConfig['dir'] ?? 'ltr',
+            'categories'       => $pwaConfig['categories'] ?? [],
             'start_url'        => $pwaConfig['start_url'] ?? '/',
             'display'          => $pwaConfig['display'] ?? 'standalone',
             'background_color' => $pwaConfig['background_color'] ?? '#ffffff',
             'theme_color'      => $pwaConfig['theme_color'] ?? '#4f46e5',
             'orientation'      => $pwaConfig['orientation'] ?? 'any',
-            'scope'            => '/',
+            'scope'            => $pwaConfig['scope'] ?? '/',
             'icons'            => $pwaConfig['icons'] ?? [],
+            'screenshots'      => $pwaConfig['screenshots'] ?? [],
+            'shortcuts'        => $pwaConfig['shortcuts'] ?? [],
         ];
         
         header('Content-Type: application/json; charset=utf-8');
@@ -56,21 +62,30 @@ class PwaController extends Controller
         header('Content-Type: application/javascript; charset=utf-8');
         header('Service-Worker-Allowed: /');
         
-        $cacheName = 'dglab-v' . APP_VERSION;
-        $baseUrl = $this->config['app']['base_url'] ?? '';
+        $cacheVersion = APP_VERSION;
+        $cacheName = 'dglab-cache-v' . $cacheVersion;
+        $baseUrl = rtrim($this->config['app']['base_url'] ?? '', '/');
         
         echo <<<JS
 /**
- * DGLab PWA - Service Worker
- * @version {$cacheName}
+ * DGLab PWA - Optimized Service Worker
+ * @version {$cacheVersion}
  */
 
 const CACHE_NAME = '{$cacheName}';
+const ASSETS_CACHE = 'dglab-assets-v1';
+const IMAGE_CACHE = 'dglab-images-v1';
+
 const STATIC_ASSETS = [
     '{$baseUrl}/',
     '{$baseUrl}/offline',
     '{$baseUrl}/assets/css/app.css',
+    '{$baseUrl}/assets/css/tailwind.css',
     '{$baseUrl}/assets/js/app.js',
+    '{$baseUrl}/assets/js/vendor/jquery.min.js',
+    '{$baseUrl}/assets/vendor/bootstrap/css/bootstrap.min.css',
+    '{$baseUrl}/assets/vendor/bootstrap/js/bootstrap.bundle.min.js',
+    '{$baseUrl}/assets/vendor/fontawesome/css/all.min.css',
 ];
 
 // Install event - cache static assets
@@ -78,102 +93,95 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
+                console.log('[SW] Caching static assets');
                 return cache.addAll(STATIC_ASSETS);
             })
-            .then(() => {
-                return self.skipWaiting();
-            })
+            .then(() => self.skipWaiting())
     );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+    const cacheWhitelist = [CACHE_NAME, ASSETS_CACHE, IMAGE_CACHE];
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
+                    if (!cacheWhitelist.includes(cacheName)) {
+                        console.log('[SW] Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
-        }).then(() => {
-            return self.clients.claim();
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
-// Fetch event - serve from cache or network
+// Fetch event handler
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
-    
-    // Skip non-GET requests
-    if (request.method !== 'GET') {
+
+    // Only handle GET requests
+    if (request.method !== 'GET') return;
+
+    // Skip API and processing routes
+    if (url.pathname.startsWith('/api/') ||
+        url.pathname.includes('/upload/') ||
+        url.pathname.includes('/process')) {
         return;
     }
-    
-    // Skip API requests
-    if (url.pathname.startsWith('/api/')) {
+
+    // Navigation requests - Network First, then Cache, then Offline fallback
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request)
+                .then((response) => {
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+                    return response;
+                })
+                .catch(() => caches.match(request) || caches.match('{$baseUrl}/offline'))
+        );
         return;
     }
-    
-    // Skip upload/processing endpoints
-    if (url.pathname.includes('/upload/') || url.pathname.includes('/process')) {
+
+    // Static Assets - Cache First, then Network
+    if (url.pathname.includes('/assets/')) {
+        const cacheToUse = url.pathname.match(/\.(jpg|jpeg|png|gif|svg|webp)$/) ? IMAGE_CACHE : ASSETS_CACHE;
+        event.respondWith(
+            caches.match(request).then((cachedResponse) => {
+                if (cachedResponse) return cachedResponse;
+                return fetch(request).then((response) => {
+                    if (response.ok) {
+                        const copy = response.clone();
+                        caches.open(cacheToUse).then((cache) => cache.put(request, copy));
+                    }
+                    return response;
+                });
+            })
+        );
         return;
     }
-    
-    // Strategy: Cache First, then Network
+
+    // Default strategy: Stale-While-Revalidate
     event.respondWith(
         caches.match(request).then((cachedResponse) => {
-            if (cachedResponse) {
-                // Return cached response and update cache in background
-                fetch(request)
-                    .then((networkResponse) => {
-                        if (networkResponse.ok) {
-                            caches.open(CACHE_NAME).then((cache) => {
-                                cache.put(request, networkResponse);
-                            });
-                        }
-                    })
-                    .catch(() => {
-                        // Network failed, but we have cached response
-                    });
-                
-                return cachedResponse;
-            }
-            
-            // Not in cache, fetch from network
-            return fetch(request)
-                .then((networkResponse) => {
-                    // Cache successful responses
-                    if (networkResponse.ok && networkResponse.status === 200) {
-                        const responseClone = networkResponse.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put(request, responseClone);
-                        });
-                    }
-                    
-                    return networkResponse;
-                })
-                .catch(() => {
-                    // Network failed, serve offline page for navigation requests
-                    if (request.mode === 'navigate') {
-                        return caches.match('{$baseUrl}/offline');
-                    }
-                    
-                    return new Response('Network error', {
-                        status: 408,
-                        headers: { 'Content-Type': 'text/plain' }
-                    });
-                });
+            const fetchPromise = fetch(request).then((networkResponse) => {
+                if (networkResponse.ok) {
+                    const copy = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+                }
+                return networkResponse;
+            });
+            return cachedResponse || fetchPromise;
         })
     );
 });
 
-// Message event - handle messages from client
+// Handle messages (e.g., skipWaiting)
 self.addEventListener('message', (event) => {
-    if (event.data === 'skipWaiting') {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
 });
@@ -188,7 +196,8 @@ JS;
     public function offline(): void
     {
         $this->render('pwa/offline', [
-            'title' => 'Offline',
-        ], null);
+            'title'      => 'Offline',
+            'active_nav' => 'offline',
+        ]);
     }
 }

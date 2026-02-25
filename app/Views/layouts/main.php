@@ -34,11 +34,17 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('vendor/bootstrap/css/bootstrap.min.css'); ?>">
+
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('vendor/fontawesome/css/all.min.css'); ?>">
     
-    <!-- Application CSS -->
-    <link rel="stylesheet" href="<?php echo $base_url; ?>/assets/css/app.css?v=<?php echo APP_VERSION; ?>">
+    <!-- Tailwind & Application CSS -->
+    <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('css/tailwind.css'); ?>">
+
+    <!-- Legacy Application CSS (Fallback) -->
+    <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('css/app.css'); ?>">
     
     <!-- Page-specific CSS -->
     <?php if (isset($page_css)): ?>
@@ -72,10 +78,13 @@
     </div>
     
     <!-- jQuery -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="<?php echo DGLab\Core\AssetBundler::asset('js/vendor/jquery.min.js'); ?>"></script>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="<?php echo DGLab\Core\AssetBundler::asset('vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
     
     <!-- Application JavaScript -->
-    <script src="<?php echo $base_url; ?>/assets/js/app.js?v=<?php echo APP_VERSION; ?>"></script>
+    <script src="<?php echo DGLab\Core\AssetBundler::asset('js/app.js'); ?>"></script>
     
     <!-- Page-specific JavaScript -->
     <?php if (isset($page_js)): ?>
@@ -89,10 +98,52 @@
                 navigator.serviceWorker.register('<?php echo $base_url; ?>/sw.js')
                     .then(function(registration) {
                         console.log('SW registered:', registration.scope);
+
+                        // Handle updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New content is available, show notification
+                                    showUpdateNotification(registration);
+                                }
+                            });
+                        });
                     })
                     .catch(function(error) {
                         console.log('SW registration failed:', error);
                     });
+            });
+
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    window.location.reload();
+                    refreshing = true;
+                }
+            });
+        }
+
+        function showUpdateNotification(registration) {
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-info';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                <div class="tw-flex tw-items-center tw-gap-3">
+                    <i class="fas fa-sync-alt fa-spin"></i>
+                    <span>New version available!</span>
+                    <button id="update-btn" class="btn btn-primary btn-sm">Update</button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+
+            document.getElementById('update-btn').addEventListener('click', () => {
+                if (registration.waiting) {
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                }
             });
         }
     </script>

@@ -6,7 +6,7 @@
  */
 ?>
 <!-- Hero Section -->
-<section class="hero">
+<section class="hero ">
     <div class="container">
         <div class="hero-content">
             <h1 class="hero-title">

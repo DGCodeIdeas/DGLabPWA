@@ -158,6 +158,9 @@ return [
     // PWA SETTINGS
     // =========================================================================
     'pwa' => [
+        // App ID (unique)
+        'id'          => 'com.dgcodeideas.dglab.pwa',
+
         // App name
         'name'        => 'DGLab PWA',
 
@@ -165,7 +168,7 @@ return [
         'short_name'  => 'DGLab',
 
         // Description
-        'description' => 'Digital Lab - Web Tools Platform',
+        'description' => 'Digital Lab - Web Tools Platform for file processing and conversion',
 
         // Theme color
         'theme_color' => '#4f46e5',
@@ -179,8 +182,18 @@ return [
         // Start URL
         'start_url'   => '/',
 
+        // Scope
+        'scope'       => '/',
+
         // Orientation: any, natural, landscape, portrait
         'orientation' => 'any',
+
+        // Language and Direction
+        'lang'        => 'en-US',
+        'dir'         => 'ltr',
+
+        // Categories
+        'categories'  => ['utilities', 'productivity', 'education'],
 
         // Icons
         'icons'       => [
@@ -188,43 +201,93 @@ return [
                 'src'   => '/assets/icons/icon-72x72.png',
                 'sizes' => '72x72',
                 'type'  => 'image/png',
+                'purpose' => 'any'
             ],
             [
                 'src'   => '/assets/icons/icon-96x96.png',
                 'sizes' => '96x96',
                 'type'  => 'image/png',
+                'purpose' => 'any'
             ],
             [
                 'src'   => '/assets/icons/icon-128x128.png',
                 'sizes' => '128x128',
                 'type'  => 'image/png',
+                'purpose' => 'any'
             ],
             [
                 'src'   => '/assets/icons/icon-144x144.png',
                 'sizes' => '144x144',
                 'type'  => 'image/png',
+                'purpose' => 'any'
             ],
             [
                 'src'   => '/assets/icons/icon-152x152.png',
                 'sizes' => '152x152',
                 'type'  => 'image/png',
+                'purpose' => 'any'
             ],
             [
                 'src'   => '/assets/icons/icon-192x192.png',
                 'sizes' => '192x192',
                 'type'  => 'image/png',
+                'purpose' => 'any'
+            ],
+            [
+                'src'   => '/assets/icons/icon-192x192.png',
+                'sizes' => '192x192',
+                'type'  => 'image/png',
+                'purpose' => 'maskable'
             ],
             [
                 'src'   => '/assets/icons/icon-384x384.png',
                 'sizes' => '384x384',
                 'type'  => 'image/png',
+                'purpose' => 'any'
             ],
             [
                 'src'   => '/assets/icons/icon-512x512.png',
                 'sizes' => '512x512',
                 'type'  => 'image/png',
+                'purpose' => 'any'
             ],
         ],
+
+        // Screenshots
+        'screenshots' => [
+            [
+                'src'   => '/assets/screenshots/screenshot-desktop.png',
+                'sizes' => '1280x800',
+                'type'  => 'image/png',
+                'form_factor' => 'wide',
+                'label' => 'DGLab PWA Desktop Interface'
+            ],
+            [
+                'src'   => '/assets/screenshots/screenshot-mobile.png',
+                'sizes' => '750x1334',
+                'type'  => 'image/png',
+                'form_factor' => 'narrow',
+                'label' => 'DGLab PWA Mobile Interface'
+            ],
+        ],
+
+        // Shortcuts
+        'shortcuts' => [
+            [
+                'name' => 'Available Tools',
+                'short_name' => 'Tools',
+                'description' => 'View all available web tools',
+                'url' => '/tools',
+                'icons' => [['src' => '/assets/icons/icon-96x96.png', 'sizes' => '96x96']]
+            ],
+            [
+                'name' => 'Documentation',
+                'short_name' => 'Docs',
+                'description' => 'Read the application documentation',
+                'url' => '/docs',
+                'icons' => [['src' => '/assets/icons/icon-96x96.png', 'sizes' => '96x96']]
+            ]
+        ]
     ],
 
     // =========================================================================

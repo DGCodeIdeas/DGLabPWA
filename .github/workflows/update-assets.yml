@@ -1,0 +1,51 @@
+name: Update Assets
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Weekly on Sunday at midnight
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Note: Using GITHUB_TOKEN will NOT trigger other workflows (like FTP Deploy).
+          # For automatic deployment after update, use a Personal Access Token (PAT).
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Update dependencies
+        run: pnpm update
+
+      - name: Build assets
+        run: pnpm run build
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git add -A
+          git diff --staged --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update assets and dependencies"
+          git push
