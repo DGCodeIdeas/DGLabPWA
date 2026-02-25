@@ -1,27 +1,30 @@
-<div class="container py-5">
-    <div class="d-flex align-items-center mb-4">
-        <a href="/tools" class="btn btn-outline-secondary me-3">
-            <i class="fas fa-arrow-left"></i> All Tools
-        </a>
-        <h1 class="h2 mb-0"><?php echo htmlspecialchars($category); ?> Tools</h1>
-    </div>
+<div class="tw-bg-blur-blob" style="top: 10%; right: -5%; background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%);"></div>
 
-    <div class="row g-4">
-        <?php foreach ($tools as $id => $tool): ?>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm tool-card">
-                    <div class="card-body">
-                        <div class="tool-icon mb-3">
-                            <i class="<?php echo htmlspecialchars($tool->getIcon()); ?> fa-2x text-primary"></i>
-                        </div>
-                        <h5 class="card-title"><?php echo htmlspecialchars($tool->getName()); ?></h5>
-                        <p class="card-text text-muted"><?php echo htmlspecialchars($tool->getDescription()); ?></p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 pb-3">
-                        <a href="/tool/<?php echo $id; ?>" class="btn btn-primary w-100">Open Tool</a>
-                    </div>
-                </div>
+<section class="tw-pt-32 tw-pb-20">
+    <div class="container">
+        <div class="lg:tw-broken-grid tw-items-end tw-mb-16">
+            <div class="tw-col-span-12 lg:tw-col-span-8">
+                <a href="<?php echo $base_url; ?>/tools" class="tw-inline-flex tw-items-center tw-text-indigo-600 tw-font-bold tw-mb-6 hover:tw-translate-x-[-4px] tw-transition-transform">
+                    <i class="fas fa-arrow-left tw-mr-2"></i>
+                    Back to All Tools
+                </a>
+                <h1 class="tw-text-6xl tw-font-bold"><?php echo htmlspecialchars($category); ?> <span class="tw-text-gradient">Tools</span></h1>
             </div>
-        <?php endforeach; ?>
+        </div>
+
+        <div class="tools-grid tw-gap-12">
+            <?php $i = 0; foreach ($tools as $id => $tool): ?>
+                <a href="<?php echo $base_url; ?>/tool/<?php echo $id; ?>"
+                   class="tool-card tw-p-10 tw-border-none tw-shadow-sm hover:tw-shadow-2xl <?php echo $i % 2 === 1 ? 'lg:tw-offset-y-lg' : ''; ?>">
+                    <div class="tool-card-icon tw-w-16 tw-h-16 tw-text-xl tw-mb-8">
+                        <i class="fas <?php echo $tool->getIcon(); ?>"></i>
+                    </div>
+                    <h3 class="tool-card-title tw-text-2xl tw-mb-4"><?php echo htmlspecialchars($tool->getName()); ?></h3>
+                    <p class="tool-card-description tw-text-gray-500 tw-mb-0">
+                        <?php echo htmlspecialchars($tool->getDescription()); ?>
+                    </p>
+                </a>
+            <?php $i++; endforeach; ?>
+        </div>
     </div>
-</div>
+</section>

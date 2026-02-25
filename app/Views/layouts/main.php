@@ -50,8 +50,15 @@
     <?php if (isset($page_css)): ?>
         <link rel="stylesheet" href="<?php echo $base_url; ?>/assets/css/<?php echo $page_css; ?>.css?v=<?php echo APP_VERSION; ?>">
     <?php endif; ?>
+
+    <style>
+        ::selection {
+            background-color: #4f46e5;
+            color: white;
+        }
+    </style>
 </head>
-<body class="<?php echo $body_class ?? ''; ?>">
+<body class="tw-overflow-x-hidden <?php echo $body_class ?? ''; ?>">
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
