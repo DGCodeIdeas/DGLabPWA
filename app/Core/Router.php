@@ -291,7 +291,8 @@ class Router
     private function compileRoute(string $route): string
     {
         // Escape special regex characters except braces
-        $pattern = preg_replace('/[\.\+\*\?\^\$\[\]\|]/', '\\$0', $route);
+        // We use \\\\$0 to ensure a literal backslash is prepended to the match
+        $pattern = preg_replace('/[\.\+\*\?\^\$\[\]\|]/', '\\\\$0', $route);
         
         // Replace parameter placeholders with regex patterns
         // Format: {param} or {param:type}
@@ -467,20 +468,38 @@ class Router
     /**
      * Get the current request URI
      * 
+     * Supports various server configurations including InfinityFree's
+     * __route__ parameter from .htaccess.
+     *
      * @return string Current URI without query string
      */
     private function getCurrentUri(): string
     {
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
-        
-        // Remove query string
-        if (($pos = strpos($uri, '?')) !== false) {
-            $uri = substr($uri, 0, $pos);
-        }
-        
-        // Remove base path
-        if ($this->basePath !== '' && strpos($uri, $this->basePath) === 0) {
-            $uri = substr($uri, strlen($this->basePath));
+        // 1. Try to get the route from the __route__ parameter (set by .htaccess)
+        if (isset($_GET['__route__'])) {
+            $uri = '/' . ltrim($_GET['__route__'], '/');
+        } else {
+            // 2. Fallback to REQUEST_URI
+            $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+            // Remove query string
+            if (($pos = strpos($uri, '?')) !== false) {
+                $uri = substr($uri, 0, $pos);
+            }
+
+            // Remove base path if set
+            if ($this->basePath !== '' && strpos($uri, $this->basePath) === 0) {
+                $uri = substr($uri, strlen($this->basePath));
+            }
+
+            // Remove front controller if it remains (common on shared hosting)
+            $scripts = ['/index.php', '/public/index.php'];
+            foreach ($scripts as $script) {
+                if (strpos($uri, $script) === 0) {
+                    $uri = substr($uri, strlen($script));
+                    break;
+                }
+            }
         }
         
         // Ensure leading slash and remove trailing slash for consistent matching
