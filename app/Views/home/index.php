@@ -1,169 +1,187 @@
 <?php
 /**
- * Home Page View - Redesigned for Asymmetrical Beauty
+ * Home Page View - Redesigned for Bootstrap 5 with a touch of Palette
  * 
  * @package DGLab\Views\Home
  */
 ?>
 <!-- Hero Section -->
-<section class="tw-relative tw-pt-48 tw-pb-64 tw-overflow-hidden tw-bg-slate-50">
-    <!-- Animated Blobs -->
-    <div class="tw-absolute tw-top-[-10%] tw-right-[-5%] tw-w-[800px] tw-h-[800px] tw-rounded-full tw-bg-indigo-100/50 tw-blur-[120px] tw-animate-pulse"></div>
-    <div class="tw-absolute tw-bottom-[-10%] tw-left-[-5%] tw-w-[600px] tw-h-[600px] tw-rounded-full tw-bg-purple-100/50 tw-blur-[100px]"></div>
+<section class="position-relative py-5 overflow-hidden bg-white border-bottom">
+    <!-- Palette's Touch: Animated Blobs -->
+    <div class="tw-bg-blur-blob position-absolute" style="top: -10%; right: -5%; background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%);"></div>
+    <div class="tw-bg-blur-blob position-absolute" style="bottom: -10%; left: -5%; background: radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, transparent 70%);"></div>
 
-    <div class="container tw-relative tw-z-10">
-        <div class="lg:tw-broken-grid tw-items-center">
-            <div class="tw-col-span-12 lg:tw-col-span-7">
-                <h1 class="tw-text-8xl tw-font-bold tw-leading-tight tw-mb-8 tw-tracking-tighter">
+    <div class="container position-relative z-1 py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <h1 class="display-1 fw-black mb-4 tracking-tighter">
                     Powerful Web Tools for
                     <span class="tw-text-gradient">File Processing</span>
                 </h1>
-                <p class="tw-text-2xl tw-text-slate-600 tw-max-w-xl tw-mb-12 tw-leading-relaxed">
+                <p class="lead text-muted mb-5 fs-4">
                     Transform, convert, and optimize your files with our collection of
                     high-performance, privacy-first tools.
                 </p>
-                <div class="tw-flex tw-flex-wrap tw-gap-6">
-                    <a href="<?php echo $base_url; ?>/tools" class="btn btn-primary tw-px-10 tw-py-5 tw-rounded-2xl tw-text-lg tw-font-bold tw-shadow-2xl hover:tw-scale-105 tw-transition-transform">
-                        <i class="fas fa-rocket tw-mr-2"></i>
-                        Get Started
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="<?php echo $base_url; ?>/tools" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                        <i class="fas fa-rocket me-2" aria-hidden="true"></i> Get Started
                     </a>
-                    <a href="<?php echo $base_url; ?>/docs" class="btn btn-outline tw-px-10 tw-py-5 tw-rounded-2xl tw-text-lg tw-font-bold hover:tw-bg-white">
-                        <i class="fas fa-book tw-mr-2"></i>
-                        Documentation
+                    <a href="<?php echo $base_url; ?>/docs" class="btn btn-outline-secondary btn-lg rounded-pill px-5">
+                        <i class="fas fa-book me-2" aria-hidden="true"></i> Documentation
                     </a>
                 </div>
             </div>
 
-            <!-- Hero Visual: Asymmetrical Floating Elements -->
-            <div class="tw-col-span-12 lg:tw-col-span-5 tw-relative tw-mt-24 lg:tw-mt-0">
-                <div class="tw-relative tw-w-full tw-h-[500px]">
-                    <!-- Main Floating Card -->
-                    <div class="tw-floating-card tw-glass-card tw-absolute tw-top-0 tw-right-0 tw-w-72 tw-p-8 tw-rounded-[2.5rem] tw-z-30">
-                        <div class="tw-w-16 tw-h-16 tw-bg-indigo-600 tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-mb-6 tw-shadow-xl">
-                            <i class="fas fa-magic tw-text-white tw-text-2xl"></i>
+            <!-- Hero Visual: Clean with a touch of Asymmetry -->
+            <div class="col-lg-5 position-relative mt-5 mt-lg-0">
+                <div class="position-relative py-5">
+                    <div class="card border-0 shadow-lg rounded-4 p-4 tw-floating-card mx-auto" style="max-width: 320px; z-index: 10;">
+                        <div class="bg-primary bg-gradient rounded-4 d-flex align-items-center justify-content-center mb-4 shadow" style="width: 4rem; height: 4rem;">
+                            <i class="fas fa-magic text-white fs-3" aria-hidden="true"></i>
                         </div>
-                        <div class="tw-text-sm tw-font-bold tw-text-slate-400 tw-uppercase tw-tracking-widest tw-mb-2">Processor</div>
-                        <div class="tw-text-2xl tw-font-bold tw-text-slate-900">Convert</div>
+                        <div class="text-uppercase tracking-widest text-secondary fw-bold small mb-2">Processor</div>
+                        <h2 class="h4 fw-bold">Instant Conversion</h2>
+                        <p class="text-muted small mb-0">Drag and drop any file to begin the magic.</p>
                     </div>
 
-                    <!-- Secondary Card (Offset) -->
-                    <div class="tw-floating-card tw-glass-card tw-absolute tw-bottom-12 tw-left-0 tw-w-64 tw-p-8 tw-rounded-[2rem] tw-z-20 tw-rotate-[-6deg]">
-                        <div class="tw-w-12 tw-h-12 tw-bg-purple-600 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-mb-4 tw-shadow-lg">
-                            <i class="fas fa-file-alt tw-text-white tw-text-xl"></i>
-                        </div>
-                        <div class="tw-text-xl tw-font-bold tw-text-slate-900">E-Books</div>
-                    </div>
-
-                    <!-- Decorative Circle -->
-                    <div class="tw-absolute tw-top-1/2 tw-left-1/2 tw-translate-x-[-50%] tw-translate-y-[-50%] tw-w-96 tw-h-96 tw-border tw-border-indigo-100 tw-rounded-full tw-z-0"></div>
+                    <!-- Decorative back element -->
+                    <div class="position-absolute top-50 start-50 translate-middle w-100 h-100 border border-primary opacity-10 rounded-circle" style="z-index: 0;"></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section: Spacious and Minimal -->
-<section class="tw-py-48 tw-bg-white">
-    <div class="container">
-        <div class="lg:tw-broken-grid tw-mb-32">
-            <div class="tw-col-span-12 lg:tw-col-span-6">
-                <h2 class="tw-text-6xl tw-font-bold tw-mb-8">Built for <span class="tw-text-indigo-600">Privacy</span> & Speed.</h2>
-                <p class="tw-text-xl tw-text-slate-500 tw-max-w-md">
-                    We've optimized every layer of the experience to ensure your files never leave the security of our environment.
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="row mb-5 justify-content-center text-center">
+            <div class="col-lg-8">
+                <h2 class="display-5 fw-bold mb-4">Built for <span class="text-primary">Privacy</span> & Speed</h2>
+                <p class="lead text-muted">
+                    We've optimized every layer to ensure your files are processed securely and efficiently.
                 </p>
             </div>
         </div>
         
-        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-12">
-            <div class="tw-group tw-p-10 tw-rounded-[2.5rem] tw-bg-slate-50 hover:tw-bg-indigo-600 tw-transition-colors">
-                <div class="tw-w-14 tw-h-14 tw-bg-white tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-mb-8 tw-shadow-sm group-hover:tw-rotate-12 tw-transition-transform">
-                    <i class="fas fa-bolt tw-text-indigo-600"></i>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 transition-hover">
+                    <div class="card-body">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 3.5rem; height: 3.5rem;">
+                            <i class="fas fa-bolt fs-4" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="h5 fw-bold mb-3">Fast Processing</h3>
+                        <p class="text-muted small mb-0">Optimized algorithms and chunked uploads for maximum efficiency.</p>
+                    </div>
                 </div>
-                <h3 class="tw-text-2xl tw-font-bold tw-mb-4 group-hover:tw-text-white">Fast Processing</h3>
-                <p class="tw-text-slate-500 group-hover:tw-text-indigo-100">
-                    Optimized algorithms and chunked uploads for efficiency.
-                </p>
             </div>
             
-            <div class="tw-group tw-p-10 tw-rounded-[2.5rem] tw-bg-slate-50 hover:tw-bg-indigo-600 tw-transition-colors">
-                <div class="tw-w-14 tw-h-14 tw-bg-white tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-mb-8 tw-shadow-sm group-hover:tw-rotate-12 tw-transition-transform">
-                    <i class="fas fa-shield-alt tw-text-indigo-600"></i>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 transition-hover">
+                    <div class="card-body">
+                        <div class="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 3.5rem; height: 3.5rem;">
+                            <i class="fas fa-shield-alt fs-4" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="h5 fw-bold mb-3">Privacy First</h3>
+                        <p class="text-muted small mb-0">Secure processing with automated deletion policies for your peace of mind.</p>
+                    </div>
                 </div>
-                <h3 class="tw-text-2xl tw-font-bold tw-mb-4 group-hover:tw-text-white">Privacy First</h3>
-                <p class="tw-text-slate-500 group-hover:tw-text-indigo-100">
-                    Your files are processed securely and deleted automatically.
-                </p>
             </div>
             
-            <div class="tw-group tw-p-10 tw-rounded-[2.5rem] tw-bg-slate-50 hover:tw-bg-indigo-600 tw-transition-colors">
-                <div class="tw-w-14 tw-h-14 tw-bg-white tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-mb-8 tw-shadow-sm group-hover:tw-rotate-12 tw-transition-transform">
-                    <i class="fas fa-mobile-alt tw-text-indigo-600"></i>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 transition-hover">
+                    <div class="card-body">
+                        <div class="bg-info bg-opacity-10 text-info rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 3.5rem; height: 3.5rem;">
+                            <i class="fas fa-mobile-alt fs-4" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="h5 fw-bold mb-3">PWA Ready</h3>
+                        <p class="text-muted small mb-0">Install on any device for a seamless app-like experience anywhere.</p>
+                    </div>
                 </div>
-                <h3 class="tw-text-2xl tw-font-bold tw-mb-4 group-hover:tw-text-white">Works Everywhere</h3>
-                <p class="tw-text-slate-500 group-hover:tw-text-indigo-100">
-                    Progressive Web App works on any device. Install for offline access.
-                </p>
             </div>
             
-            <div class="tw-group tw-p-10 tw-rounded-[2.5rem] tw-bg-slate-50 hover:tw-bg-indigo-600 tw-transition-colors">
-                <div class="tw-w-14 tw-h-14 tw-bg-white tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-mb-8 tw-shadow-sm group-hover:tw-rotate-12 tw-transition-transform">
-                    <i class="fas fa-code tw-text-indigo-600"></i>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-3 transition-hover">
+                    <div class="card-body">
+                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 3.5rem; height: 3.5rem;">
+                            <i class="fas fa-code fs-4" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="h5 fw-bold mb-3">API Access</h3>
+                        <p class="text-muted small mb-0">Comprehensive RESTful API for seamless integration into your workflows.</p>
+                    </div>
                 </div>
-                <h3 class="tw-text-2xl tw-font-bold tw-mb-4 group-hover:tw-text-white">API Friendly</h3>
-                <p class="tw-text-slate-500 group-hover:tw-text-indigo-100">
-                    RESTful API for seamless integration into your own apps.
-                </p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Tools Preview: Staggered Layout -->
-<section class="tw-py-48 tw-bg-slate-50">
-    <div class="container">
-        <div class="tw-flex tw-items-center tw-justify-between tw-mb-24">
-            <h2 class="tw-text-6xl tw-font-bold">Available <span class="tw-text-gradient">Tools</span></h2>
-            <a href="<?php echo $base_url; ?>/tools" class="tw-text-lg tw-font-bold tw-text-indigo-600 tw-flex tw-items-center tw-gap-3 hover:tw-translate-x-2 tw-transition-transform">
-                View Arsenal
-                <i class="fas fa-arrow-right"></i>
+<!-- Tools Preview -->
+<section class="py-5 bg-white">
+    <div class="container py-5">
+        <div class="d-flex align-items-center justify-content-between mb-5">
+            <h2 class="display-6 fw-bold mb-0">Available <span class="tw-text-gradient">Tools</span></h2>
+            <a href="<?php echo $base_url; ?>/tools" class="btn btn-link text-primary fw-bold text-decoration-none p-0">
+                View Arsenal <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
             </a>
         </div>
         
-        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-12">
+        <div class="row g-4">
             <?php $i = 0; foreach ($featured as $id => $tool): ?>
-                <a href="<?php echo $base_url; ?>/tool/<?php echo $id; ?>"
-                   class="tool-card tw-glass-card tw-p-12 tw-border-none tw-shadow-sm hover:tw-shadow-2xl tw-transition-all <?php echo $i % 2 === 1 ? 'lg:tw-offset-y-lg' : ''; ?>">
-                    <div class="tw-w-20 tw-h-20 tw-bg-indigo-600 tw-rounded-2xl tw-flex tw-items-center tw-justify-center tw-mb-10 tw-text-white tw-text-2xl">
-                        <i class="fas <?php echo $tool->getIcon(); ?>"></i>
-                    </div>
-                    <h3 class="tw-text-3xl tw-font-bold tw-mb-4"><?php echo htmlspecialchars($tool->getName()); ?></h3>
-                    <p class="tw-text-lg tw-text-slate-500 tw-mb-12">
-                        <?php echo htmlspecialchars($tool->getDescription()); ?>
-                    </p>
-                    <span class="tw-text-xs tw-font-bold tw-text-indigo-600 tw-uppercase tw-tracking-widest tw-bg-indigo-50 tw-px-6 tw-py-3 tw-rounded-full">
-                        <?php echo htmlspecialchars($tool->getCategory()); ?>
-                    </span>
-                </a>
+                <div class="col-md-6 <?php echo $i % 2 === 1 ? 'tw-offset-y-lg' : ''; ?>">
+                    <a href="<?php echo $base_url; ?>/tool/<?php echo $id; ?>" class="card h-100 border-0 shadow rounded-4 p-4 p-lg-5 text-decoration-none transition-hover group-card">
+                        <div class="bg-primary rounded-4 d-flex align-items-center justify-content-center mb-4 text-white shadow-sm" style="width: 4.5rem; height: 4.5rem;">
+                            <i class="fas <?php echo $tool->getIcon(); ?> fs-2" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="h3 fw-bold text-dark mb-3"><?php echo htmlspecialchars($tool->getName()); ?></h3>
+                        <p class="text-muted mb-4 lead fs-6">
+                            <?php echo htmlspecialchars($tool->getDescription()); ?>
+                        </p>
+                        <div>
+                            <span class="badge rounded-pill bg-light text-primary px-4 py-2 fw-bold text-uppercase tracking-widest small border">
+                                <?php echo htmlspecialchars($tool->getCategory()); ?>
+                            </span>
+                        </div>
+                    </a>
+                </div>
             <?php $i++; endforeach; ?>
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="tw-py-48">
-    <div class="container">
-        <div class="tw-relative tw-p-24 tw-bg-indigo-600 tw-rounded-[4rem] tw-text-white tw-overflow-hidden tw-text-center">
-            <div class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent_70%)]"></div>
-            <div class="tw-relative tw-z-10">
-                <h2 class="tw-text-6xl tw-font-bold tw-mb-8">Ready to Get Started?</h2>
-                <p class="tw-text-2xl tw-text-indigo-100 tw-max-w-2xl tw-mx-auto tw-mb-12">
-                    Explore our collection of tools and start processing your files today.
+<section class="py-5 bg-light border-top">
+    <div class="container py-5">
+        <div class="bg-primary bg-gradient rounded-5 p-5 p-lg-5 text-center text-white shadow-lg position-relative overflow-hidden">
+             <!-- Decorative Blob -->
+             <div class="position-absolute top-0 end-0 w-50 h-100 bg-white opacity-10 rounded-circle translate-middle-y translate-middle-x"></div>
+
+             <div class="position-relative z-1 py-4">
+                <h2 class="display-4 fw-bold mb-4">Ready to Get Started?</h2>
+                <p class="lead text-primary-light mb-5 mx-auto opacity-75" style="max-width: 700px;">
+                    Explore our arsenal of high-performance tools and experience the power of modern file processing.
                 </p>
-                <a href="<?php echo $base_url; ?>/tools" class="btn btn-primary tw-bg-white tw-text-indigo-600 tw-px-12 tw-py-6 tw-rounded-2xl tw-text-xl tw-font-bold hover:tw-scale-105 tw-transition-transform">
-                    <i class="fas fa-tools tw-mr-3"></i>
-                    Browse All Tools
+                <a href="<?php echo $base_url; ?>/tools" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold text-primary shadow">
+                    <i class="fas fa-tools me-2" aria-hidden="true"></i> Browse All Tools
                 </a>
-            </div>
+             </div>
         </div>
     </div>
 </section>
+
+<style>
+.transition-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.transition-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+}
+.group-card:hover .bg-primary {
+    transform: scale(1.05) rotate(5deg);
+    transition: transform 0.3s ease;
+}
+.text-primary-light {
+    color: #e0e7ff;
+}
+</style>

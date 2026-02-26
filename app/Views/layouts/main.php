@@ -27,24 +27,17 @@
     <link rel="icon" type="image/png" href="<?php echo $base_url; ?>/assets/icons/icon-72x72.png">
     
     <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('vendor/bootstrap/css/bootstrap.min.css'); ?>">
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('vendor/fontawesome/css/all.min.css'); ?>">
     
-    <!-- Tailwind & Application CSS -->
+    <!-- Main Compiled CSS (Includes Bootstrap & Tailwind) -->
     <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('css/tailwind.css'); ?>">
-
-    <!-- Legacy Application CSS (Fallback) -->
-    <link rel="stylesheet" href="<?php echo DGLab\Core\AssetBundler::asset('css/app.css'); ?>">
     
     <!-- Page-specific CSS -->
     <?php if (isset($page_css)): ?>
@@ -58,7 +51,7 @@
         }
     </style>
 </head>
-<body class="tw-overflow-x-hidden <?php echo $body_class ?? ''; ?>">
+<body class="bg-light <?php echo $body_class ?? ''; ?>">
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
@@ -78,9 +71,11 @@
     
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay" style="display: none;">
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <p class="loading-text">Processing...</p>
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 fw-bold text-dark loading-text">Processing...</p>
         </div>
     </div>
     
@@ -98,20 +93,17 @@
         <script src="<?php echo $base_url; ?>/assets/js/<?php echo $page_js; ?>.js?v=<?php echo APP_VERSION; ?>"></script>
     <?php endif; ?>
     
-    <!-- Register Service Worker -->
+    <!-- PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('<?php echo $base_url; ?>/sw.js')
                     .then(function(registration) {
                         console.log('SW registered:', registration.scope);
-
-                        // Handle updates
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // New content is available, show notification
                                     showUpdateNotification(registration);
                                 }
                             });
@@ -133,16 +125,20 @@
 
         function showUpdateNotification(registration) {
             const toast = document.createElement('div');
-            toast.className = 'toast toast-info';
+            toast.className = 'toast align-items-center text-white bg-primary border-0 show';
             toast.style.position = 'fixed';
             toast.style.bottom = '20px';
             toast.style.right = '20px';
             toast.style.zIndex = '9999';
+            toast.role = 'alert';
+            toast.ariaLive = 'assertive';
+            toast.ariaAtomic = 'true';
             toast.innerHTML = `
-                <div class="tw-flex tw-items-center tw-gap-3">
-                    <i class="fas fa-sync-alt fa-spin"></i>
-                    <span>New version available!</span>
-                    <button id="update-btn" class="btn btn-primary btn-sm">Update</button>
+                <div class="d-flex">
+                    <div class="toast-body">
+                        New version available!
+                    </div>
+                    <button type="button" id="update-btn" class="btn btn-light btn-sm me-2 m-auto">Update</button>
                 </div>
             `;
             document.body.appendChild(toast);

@@ -40,6 +40,7 @@ class HomeController extends Controller
             'tools'      => $tools,
             'categories' => $categories,
             'featured'   => array_slice($tools, 0, 6, true),
+            'active_nav' => 'home'
         ]);
     }
 
@@ -53,6 +54,7 @@ class HomeController extends Controller
         $this->render('home/about', [
             'title'       => 'About ' . APP_NAME,
             'description' => 'Learn more about DGLab PWA and its features.',
+            'active_nav'  => 'about'
         ]);
     }
 
@@ -64,7 +66,8 @@ class HomeController extends Controller
     public function docs(): void
     {
         $this->render('home/docs', [
-            'title' => 'Documentation',
+            'title'      => 'Documentation',
+            'active_nav' => 'docs'
         ]);
     }
 }
