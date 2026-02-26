@@ -2,7 +2,7 @@
 /**
  * DGLab PWA - Error Controller
  * 
- * Handles error pages (404, 500, etc.)
+ * Handles error pages.
  * 
  * @package DGLab\Controllers
  * @author DGLab Team
@@ -16,37 +16,45 @@ use DGLab\Core\Controller;
 /**
  * ErrorController Class
  * 
- * Controller for handling application errors.
+ * Controller for error pages.
  */
 class ErrorController extends Controller
 {
     /**
-     * 404 Not Found error page
+     * 404 Not Found page
      * 
      * @return void
      */
     public function notFound(): void
     {
-        header("HTTP/1.0 404 Not Found");
+        http_response_code(404);
+        
+        if ($this->isApi()) {
+            $this->error('Not Found', 404);
+            return;
+        }
         
         $this->render('errors/404', [
             'title' => 'Page Not Found',
-            'active_nav' => 'error'
-        ]);
+        ], null);
     }
 
     /**
-     * 500 Internal Server Error page
+     * 500 Server Error page
      * 
      * @return void
      */
-    public function internalError(): void
+    public function serverError(): void
     {
-        header("HTTP/1.0 500 Internal Server Error");
+        http_response_code(500);
+        
+        if ($this->isApi()) {
+            $this->error('Internal Server Error', 500);
+            return;
+        }
         
         $this->render('errors/500', [
-            'title' => 'Internal Server Error',
-            'active_nav' => 'error'
-        ]);
+            'title' => 'Server Error',
+        ], null);
     }
 }
