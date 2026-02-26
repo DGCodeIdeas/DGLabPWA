@@ -57,7 +57,6 @@ class ToolController extends Controller
             'title'      => 'All Tools',
             'tools'      => $tools,
             'categories' => $categories,
-            'active_nav' => 'tools'
         ]);
     }
 
@@ -77,10 +76,9 @@ class ToolController extends Controller
         }
         
         $this->render('tools/category', [
-            'title'      => $category . ' Tools',
-            'category'   => $category,
-            'tools'      => $tools,
-            'active_nav' => 'tools'
+            'title'    => $category . ' Tools',
+            'category' => $category,
+            'tools'    => $tools,
         ]);
     }
 
@@ -96,8 +94,7 @@ class ToolController extends Controller
         
         if ($tool === null) {
             $this->render('errors/404', [
-                'title'      => 'Tool Not Found',
-                'active_nav' => 'tools'
+                'title' => 'Tool Not Found',
             ]);
             return;
         }
@@ -105,10 +102,9 @@ class ToolController extends Controller
         $metadata = $this->registry->getMetadata($id);
         
         $this->render('tools/show', [
-            'title'      => $tool->getName(),
-            'tool'       => $tool,
-            'metadata'   => $metadata,
-            'active_nav' => 'tools'
+            'title'    => $tool->getName(),
+            'tool'     => $tool,
+            'metadata' => $metadata,
         ]);
     }
 

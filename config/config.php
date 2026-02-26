@@ -2,6 +2,9 @@
 /**
  * DGLab PWA - Configuration File
  *
+ * This is an example configuration file. Copy this to config.php
+ * and modify the values for your environment.
+ *
  * Platform: InfinityFree (or any PHP 8+ shared hosting)
  *
  * @package DGLab\Config
