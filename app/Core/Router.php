@@ -21,6 +21,12 @@ class Router
     /** @var array Registered routes */
     private array $routes = [];
 
+    /** @var array Named routes mapping */
+    private array $namedRoutes = [];
+
+    /** @var string Current group prefix */
+    private string $groupPrefix = '';
+
     /** @var string Base path for the application */
     private string $basePath = '';
 
@@ -39,11 +45,12 @@ class Router
      * 
      * @param string $path Route path
      * @param mixed $handler Route handler (controller@method or closure)
+     * @param string|null $name Route name
      * @return void
      */
-    public function get(string $path, mixed $handler): void
+    public function get(string $path, mixed $handler, ?string $name = null): void
     {
-        $this->addRoute('GET', $path, $handler);
+        $this->addRoute('GET', $path, $handler, $name);
     }
 
     /**
@@ -51,11 +58,71 @@ class Router
      * 
      * @param string $path Route path
      * @param mixed $handler Route handler
+     * @param string|null $name Route name
      * @return void
      */
-    public function post(string $path, mixed $handler): void
+    public function post(string $path, mixed $handler, ?string $name = null): void
     {
-        $this->addRoute('POST', $path, $handler);
+        $this->addRoute('POST', $path, $handler, $name);
+    }
+
+    /**
+     * Add a PUT route
+     *
+     * @param string $path Route path
+     * @param mixed $handler Route handler
+     * @param string|null $name Route name
+     * @return void
+     */
+    public function put(string $path, mixed $handler, ?string $name = null): void
+    {
+        $this->addRoute('PUT', $path, $handler, $name);
+    }
+
+    /**
+     * Add a PATCH route
+     *
+     * @param string $path Route path
+     * @param mixed $handler Route handler
+     * @param string|null $name Route name
+     * @return void
+     */
+    public function patch(string $path, mixed $handler, ?string $name = null): void
+    {
+        $this->addRoute('PATCH', $path, $handler, $name);
+    }
+
+    /**
+     * Add a DELETE route
+     *
+     * @param string $path Route path
+     * @param mixed $handler Route handler
+     * @param string|null $name Route name
+     * @return void
+     */
+    public function delete(string $path, mixed $handler, ?string $name = null): void
+    {
+        $this->addRoute('DELETE', $path, $handler, $name);
+    }
+
+    /**
+     * Add a route group
+     *
+     * @param array $attributes Group attributes (prefix, etc.)
+     * @param callable $callback Callback to register routes in the group
+     * @return void
+     */
+    public function group(array $attributes, callable $callback): void
+    {
+        $previousPrefix = $this->groupPrefix;
+
+        if (isset($attributes['prefix'])) {
+            $this->groupPrefix = $previousPrefix . '/' . trim($attributes['prefix'], '/');
+        }
+
+        $callback($this);
+
+        $this->groupPrefix = $previousPrefix;
     }
 
     /**
@@ -64,22 +131,62 @@ class Router
      * @param string $method HTTP method
      * @param string $path Route path
      * @param mixed $handler Route handler
+     * @param string|null $name Route name
      * @return void
      */
-    private function addRoute(string $method, string $path, mixed $handler): void
+    private function addRoute(string $method, string $path, mixed $handler, ?string $name = null): void
     {
+        // Apply group prefix
+        $fullPath = '/' . trim($this->groupPrefix . '/' . trim($path, '/'), '/');
+        if (empty($fullPath)) {
+            $fullPath = '/';
+        }
+
         // Convert path to regex
         // Example: /tool/{id} -> #^/tool/([^/]+)$#
-        $regex = preg_quote($path, '#');
-        $regex = preg_replace('/\\\{([^/]+)\\\}/', '([^/]+)', $regex);
+        // Example: /assets/{path:any} -> #^/assets/(.*)$#
+        $regex = preg_quote($fullPath, '#');
+
+        // Support {param:any} for matching across slashes
+        $regex = preg_replace('~\\\{[^/]+:any\\\}~', '(.*)', $regex);
+        // Support regular {param}
+        $regex = preg_replace('~\\\{[^/]+\\\}~', '([^/]+)', $regex);
+
         $regex = '#^' . $regex . '$#';
+
+        if ($name) {
+            $this->namedRoutes[$name] = $fullPath;
+        }
 
         $this->routes[] = [
             'method'  => $method,
-            'path'    => $path,
+            'path'    => $fullPath,
             'regex'   => $regex,
             'handler' => $handler
         ];
+    }
+
+    /**
+     * Generate URL for a named route
+     *
+     * @param string $name Route name
+     * @param array $params Route parameters
+     * @return string Generated URL
+     */
+    public function route(string $name, array $params = []): string
+    {
+        if (!isset($this->namedRoutes[$name])) {
+            return '#';
+        }
+
+        $path = $this->namedRoutes[$name];
+
+        foreach ($params as $key => $value) {
+            // Replace {key} or {key:any}
+            $path = preg_replace('~\{' . preg_quote($key, '~') . '(:any)?\}~', $value, $path);
+        }
+
+        return $this->basePath . $path;
     }
 
     /**
@@ -89,13 +196,13 @@ class Router
      */
     public function dispatch(): void
     {
-        $method = $_SERVER['REQUEST_METHOD'];
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         
         // Detect URI from different sources (shared hosting support)
         if (isset($_GET['__route__'])) {
             $uri = '/' . ltrim($_GET['__route__'], '/');
         } else {
-            $uri = $_SERVER['REQUEST_URI'];
+            $uri = $_SERVER['REQUEST_URI'] ?? '/';
             
             // Strip query string
             if (($pos = strpos($uri, '?')) !== false) {
@@ -167,8 +274,14 @@ class Router
      */
     private function handleNotFound(): void
     {
-        $controller = new \DGLab\Controllers\ErrorController();
-        $controller->notFound();
+        $controllerClass = \DGLab\Controllers\ErrorController::class;
+        if (class_exists($controllerClass)) {
+            $controller = new $controllerClass();
+            $controller->notFound();
+        } else {
+            http_response_code(404);
+            echo "404 Not Found";
+        }
     }
 
     /**
@@ -180,7 +293,13 @@ class Router
     private function handleError(string $message): void
     {
         error_log($message);
-        $controller = new \DGLab\Controllers\ErrorController();
-        $controller->internalError();
+        $controllerClass = \DGLab\Controllers\ErrorController::class;
+        if (class_exists($controllerClass)) {
+            $controller = new $controllerClass();
+            $controller->internalError();
+        } else {
+            http_response_code(500);
+            echo "500 Internal Server Error";
+        }
     }
 }
