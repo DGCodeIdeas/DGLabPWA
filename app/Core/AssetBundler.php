@@ -524,7 +524,19 @@ class AssetBundler
     private function saveToCache(string $filename, string $content): void
     {
         $cacheFile = $this->cachePath . '/' . $filename;
-        file_put_contents($cacheFile, $content);
+        $directory = dirname($cacheFile);
+
+        // Ensure the subdirectory exists in cache
+        if (!is_dir($directory)) {
+            if (!mkdir($directory, 0755, true) && !is_dir($directory)) {
+                error_log("AssetBundler: Failed to create cache directory: {$directory}");
+                return;
+            }
+        }
+
+        if (file_put_contents($cacheFile, $content) === false) {
+            error_log("AssetBundler: Failed to write to cache file: {$cacheFile}");
+        }
     }
 
     /**
