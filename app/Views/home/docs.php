@@ -1,192 +1,128 @@
 <?php
 /**
- * Documentation Page View
+ * Documentation Page View - Bootstrap 5 Overhaul
  * 
  * @package DGLab\Views\Home
  */
 ?>
 <!-- Page Header -->
-<section class="tw-pt-48 tw-pb-32 tw-bg-slate-900 tw-text-white tw-relative tw-overflow-hidden">
-    <div class="tw-bg-blur-blob" style="top: -20%; right: -10%; background: radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%);"></div>
-    <div class="container tw-relative tw-z-10">
-        <div class="lg:tw-broken-grid">
-            <div class="tw-col-span-12 lg:tw-col-span-8">
-                <h1 class="tw-text-7xl tw-font-bold tw-mb-6">Knowledge <span class="tw-text-gradient">Base</span></h1>
-                <p class="tw-text-2xl tw-opacity-80 tw-max-w-2xl">
-                    Master the tools of the digital trade with our comprehensive documentation and API reference.
+<section class="py-5 bg-dark text-white position-relative overflow-hidden">
+    <!-- Decorative Blur Blobs -->
+    <div class="tw-bg-blur-blob position-absolute" style="top: -20%; right: -10%; background: radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%);"></div>
+    <div class="tw-bg-blur-blob position-absolute" style="bottom: -20%; left: -10%; background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);"></div>
+
+    <div class="container py-5 position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-1 fw-bold mb-4">Documentation</h1>
+                <p class="lead opacity-75 fs-3 mb-0" style="max-width: 700px;">
+                    Everything you need to know about using and extending DGLab PWA.
                 </p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Documentation Content -->
-<section class="tw-py-32 tw-bg-white">
-    <div class="container">
-        <div class="lg:tw-broken-grid tw-gap-24">
+<!-- Content Section -->
+<section class="py-5 bg-white">
+    <div class="container py-5">
+        <div class="row g-5">
             <!-- Sidebar Navigation -->
-            <aside class="tw-col-span-12 lg:tw-col-span-3">
-                <nav class="tw-sticky tw-top-32 tw-space-y-12">
-                    <div>
-                        <h3 class="tw-text-xs tw-font-bold tw-text-slate-400 tw-uppercase tw-tracking-widest tw-mb-6">Getting Started</h3>
-                        <ul class="tw-space-y-3">
-                            <li><a href="#introduction" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Introduction</a></li>
-                            <li><a href="#quickstart" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Quick Start</a></li>
-                            <li><a href="#installation" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Installation</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <h3 class="tw-text-xs tw-font-bold tw-text-slate-400 tw-uppercase tw-tracking-widest tw-mb-6">API Reference</h3>
-                        <ul class="tw-space-y-3">
-                            <li><a href="#api-overview" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">API Overview</a></li>
-                            <li><a href="#endpoints" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Endpoints</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <h3 class="tw-text-xs tw-font-bold tw-text-slate-400 tw-uppercase tw-tracking-widest tw-mb-6">Development</h3>
-                        <ul class="tw-space-y-3">
-                            <li><a href="#creating-tools" class="tw-text-slate-600 hover:tw-text-indigo-600 tw-transition-colors">Creating Tools</a></li>
-                        </ul>
-                    </div>
-                </nav>
-            </aside>
-            
-            <!-- Main Content -->
-            <main class="tw-col-span-12 lg:tw-col-span-9">
-                <article id="introduction" class="tw-mb-32">
-                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Introduction</h2>
-                    <p class="tw-text-xl tw-text-slate-600 tw-leading-relaxed">
-                        <?php echo APP_NAME; ?> is a web-based platform for file processing and conversion. 
-                        It provides a collection of tools that work directly in your browser, 
-                        with no software installation required.
-                    </p>
-                    <p class="tw-text-xl tw-text-slate-600 tw-leading-relaxed tw-mt-6">
-                        Our platform is built as a Progressive Web App (PWA), which means you can 
-                        install it on your device and use it offline. It works on desktop computers, 
-                        tablets, and mobile devices.
-                    </p>
-                </article>
-                
-                <article id="quickstart" class="tw-mb-32">
-                    <h2 class="tw-text-5xl tw-font-bold tw-mb-12">Quick Start</h2>
-                    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-8">
-                        <div class="tw-p-10 tw-bg-slate-50 tw-rounded-[2.5rem]">
-                            <span class="tw-inline-flex tw-w-10 tw-h-10 tw-bg-indigo-600 tw-text-white tw-rounded-full tw-items-center tw-justify-center tw-font-bold tw-mb-6">1</span>
-                            <h3 class="tw-text-xl tw-font-bold tw-mb-4">Choose a Tool</h3>
-                            <p class="tw-text-slate-500">Browse our <a href="/tools" class="tw-text-indigo-600">tools collection</a> and select the one you need.</p>
-                        </div>
-                        <div class="tw-p-10 tw-bg-slate-50 tw-rounded-[2.5rem]">
-                            <span class="tw-inline-flex tw-w-10 tw-h-10 tw-bg-indigo-600 tw-text-white tw-rounded-full tw-items-center tw-justify-center tw-font-bold tw-mb-6">2</span>
-                            <h3 class="tw-text-xl tw-font-bold tw-mb-4">Upload File</h3>
-                            <p class="tw-text-slate-500">Click the upload area or drag and drop your file. We support files up to 100MB.</p>
-                        </div>
-                    </div>
-                </article>
-                
-                <article id="installation" class="tw-mb-32">
-                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Installation</h2>
-                    <p class="tw-text-xl tw-text-slate-600 tw-mb-12">
-                        To install <?php echo APP_NAME; ?> as a Progressive Web App:
-                    </p>
-                    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-6">
-                        <div class="tw-p-8 tw-bg-slate-900 tw-text-white tw-rounded-3xl">
-                            <i class="fab fa-chrome tw-text-2xl tw-mb-6"></i>
-                            <h4 class="tw-font-bold tw-mb-2">Chrome / Edge</h4>
-                            <p class="tw-text-slate-400 tw-text-sm">Click the install icon (➕) in the address bar.</p>
-                        </div>
-                        <div class="tw-p-8 tw-bg-slate-900 tw-text-white tw-rounded-3xl">
-                            <i class="fab fa-safari tw-text-2xl tw-mb-6"></i>
-                            <h4 class="tw-font-bold tw-mb-2">Safari (iOS)</h4>
-                            <p class="tw-text-slate-400 tw-text-sm">Tap Share → "Add to Home Screen".</p>
-                        </div>
-                    </div>
-                </article>
-                
-                <article id="api-overview" class="tw-mb-32">
-                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">API Overview</h2>
-                    <div class="tw-p-12 tw-bg-slate-50 tw-rounded-[3rem]">
-                        <p class="tw-text-lg tw-text-slate-600 tw-mb-8">
-                            Our REST API allows you to integrate our tools into your own applications.
-                            All API endpoints return JSON responses.
+            <div class="col-lg-3">
+                <div class="sticky-top" style="top: 6rem; z-index: 10;">
+                    <nav id="docs-nav" class="nav flex-column gap-2 p-3 bg-light rounded-4 border shadow-sm">
+                        <span class="fw-bold text-uppercase tracking-widest small text-muted px-3 mb-2">Getting Started</span>
+                        <a class="nav-link py-2 px-3 rounded-3 text-dark transition-hover active" href="#introduction">Introduction</a>
+                        <a class="nav-link py-2 px-3 rounded-3 text-muted transition-hover" href="#installation">Installation</a>
+                        <a class="nav-link py-2 px-3 rounded-3 text-muted transition-hover" href="#configuration">Configuration</a>
+
+                        <span class="fw-bold text-uppercase tracking-widest small text-muted px-3 mt-4 mb-2">Features</span>
+                        <a class="nav-link py-2 px-3 rounded-3 text-muted transition-hover" href="#pwa">PWA Features</a>
+                        <a class="nav-link py-2 px-3 rounded-3 text-muted transition-hover" href="#offline">Offline Support</a>
+                        <a class="nav-link py-2 px-3 rounded-3 text-muted transition-hover" href="#upload">File Uploads</a>
+
+                        <span class="fw-bold text-uppercase tracking-widest small text-muted px-3 mt-4 mb-2">For Developers</span>
+                        <a class="nav-link py-2 px-3 rounded-3 text-muted transition-hover" href="#api">API Reference</a>
+                        <a class="nav-link py-2 px-3 rounded-3 text-muted transition-hover" href="#tools">Creating Tools</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Documentation Content -->
+            <div class="col-lg-9">
+                <div class="pe-lg-5">
+                    <article id="introduction" class="mb-5 py-3">
+                        <h2 class="display-5 fw-bold mb-4">Introduction</h2>
+                        <p class="lead text-muted mb-4 lh-base">
+                            DGLab PWA is a modern, extensible web application platform built on PHP 8+.
+                            It is designed to be a central hub for powerful, privacy-first web tools.
                         </p>
-
-                        <h3 class="tw-text-xl tw-font-bold tw-mb-4">Base URL</h3>
-                        <code class="tw-block tw-p-6 tw-bg-slate-900 tw-text-indigo-400 tw-rounded-2xl tw-font-mono tw-text-sm tw-mb-8">
-                            <?php echo $base_url; ?>/api/v1
-                        </code>
-
-                        <h3 class="tw-text-xl tw-font-bold tw-mb-4">Response Format</h3>
-                        <pre class="tw-block tw-p-8 tw-bg-slate-900 tw-text-slate-300 tw-rounded-2xl tw-font-mono tw-text-sm"><code>{
-  "success": true,
-  "data": { ... },
-  "message": "Optional message"
-}</code></pre>
-                    </div>
-                </article>
-
-                <article id="endpoints" class="tw-mb-32">
-                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Endpoints</h2>
-                    <div class="tw-space-y-6">
-                        <div class="tw-p-8 tw-bg-slate-50 tw-rounded-[2.5rem]">
-                            <div class="tw-flex tw-items-center tw-gap-4 tw-mb-4">
-                                <span class="tw-px-3 tw-py-1 tw-bg-green-500 tw-text-white tw-text-xs tw-font-bold tw-rounded tw-uppercase">GET</span>
-                                <h4 class="tw-text-xl tw-font-bold">/status</h4>
+                        <div class="alert alert-info border-0 rounded-4 p-4 shadow-sm mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle fs-3 me-3" aria-hidden="true"></i>
+                                <div>
+                                    <h4 class="alert-heading fw-bold mb-1">PWA First Design</h4>
+                                    <p class="mb-0 small opacity-80">Built from the ground up to support modern Progressive Web App features like offline access and push notifications.</p>
+                                </div>
                             </div>
-                            <p class="tw-text-slate-500">Get platform status and information.</p>
                         </div>
+                    </article>
 
-                        <div class="tw-p-8 tw-bg-slate-50 tw-rounded-[2.5rem]">
-                            <div class="tw-flex tw-items-center tw-gap-4 tw-mb-4">
-                                <span class="tw-px-3 tw-py-1 tw-bg-green-500 tw-text-white tw-text-xs tw-font-bold tw-rounded tw-uppercase">GET</span>
-                                <h4 class="tw-text-xl tw-font-bold">/tools</h4>
-                            </div>
-                            <p class="tw-text-slate-500">List all available tools.</p>
+                    <article id="installation" class="mb-5 py-3 border-top pt-5">
+                        <h2 class="display-6 fw-bold mb-4">Installation</h2>
+                        <p class="text-muted mb-4 lh-base">To install DGLab PWA on your own server, follow these simple steps:</p>
+                        <div class="card border-0 bg-dark text-white rounded-4 p-4 shadow mb-4">
+                            <pre class="mb-0"><code class="text-info">git clone https://github.com/DGCodeIdeas/DGLabPWA.git
+cd DGLabPWA
+cp config/config.example.php config/config.php</code></pre>
                         </div>
+                        <p class="text-muted mb-4">Ensure your <code>storage/</code> directory is writable by the web server.</p>
+                    </article>
 
-                        <div class="tw-p-8 tw-bg-slate-50 tw-rounded-[2.5rem]">
-                            <div class="tw-flex tw-items-center tw-gap-4 tw-mb-4">
-                                <span class="tw-px-3 tw-py-1 tw-bg-indigo-600 tw-text-white tw-text-xs tw-font-bold tw-rounded tw-uppercase">POST</span>
-                                <h4 class="tw-text-xl tw-font-bold">/process/{toolId}</h4>
-                            </div>
-                            <p class="tw-text-slate-500">Process a file with the specified tool.</p>
-                        </div>
-                    </div>
-                </article>
+                    <article id="configuration" class="mb-5 py-3 border-top pt-5">
+                        <h2 class="display-6 fw-bold mb-4">Configuration</h2>
+                        <p class="text-muted mb-4">Most settings can be found in <code>config/config.php</code>. This includes database credentials, application name, and tool-specific settings.</p>
+                    </article>
 
-                <article id="creating-tools" class="tw-mb-32">
-                    <h2 class="tw-text-5xl tw-font-bold tw-mb-8">Creating Tools</h2>
-                    <p class="tw-text-xl tw-text-slate-600 tw-mb-10">
-                        You can extend <?php echo APP_NAME; ?> by creating custom tools. Tools must implement 
-                        the <code>ToolInterface</code> and follow our conventions.
-                    </p>
-                    
-                    <div class="tw-p-10 tw-bg-slate-900 tw-rounded-[3rem]">
-                        <h3 class="tw-text-xl tw-font-bold tw-text-white tw-mb-6">Basic Tool Structure</h3>
-                        <pre class="tw-text-slate-300 tw-font-mono tw-text-sm tw-overflow-x-auto"><code>namespace DGLab\Tools\MyTool;
-
-use DGLab\Tools\Interfaces\ToolInterface;
-
-class MyTool implements ToolInterface
-{
-    public function getId(): string
-    {
-        return 'my-tool';
-    }
-    
-    public function process(string $inputPath, array $options = []): array
-    {
-        // Your processing logic
-        return [
-            'success' => true,
-            'output_path' => $outputPath
-        ];
-    }
-}</code></pre>
-                    </div>
-                </article>
-            </main>
+                    <article id="api" class="mb-5 py-3 border-top pt-5">
+                        <h2 class="display-6 fw-bold mb-4">API Reference</h2>
+                        <p class="text-muted mb-4">DGLab PWA provides a robust REST API for integrating our tools into your own projects.</p>
+                        <table class="table table-hover border-top">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3">Endpoint</th>
+                                    <th class="px-4 py-3">Method</th>
+                                    <th class="px-4 py-3">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-3 text-primary fw-bold"><code>/api/v1/tools</code></td>
+                                    <td class="px-4 py-3"><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-bold">GET</span></td>
+                                    <td class="px-4 py-3 text-muted small">List all available tools and their metadata.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-primary fw-bold"><code>/api/v1/status</code></td>
+                                    <td class="px-4 py-3"><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-bold">GET</span></td>
+                                    <td class="px-4 py-3 text-muted small">Check the health and status of the system.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </article>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
+<style>
+#docs-nav .nav-link:hover {
+    background-color: rgba(79, 70, 229, 0.05);
+    color: #4f46e5 !important;
+}
+#docs-nav .nav-link.active {
+    background-color: #4f46e5;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+</style>
